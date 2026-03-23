@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s \"https://ctu1.phc.ox.ac.uk/feverpain/index.php\")",
+      "Bash(curl -s \"https://ctu1.phc.ox.ac.uk/feverpain/js/main.js?v2\")",
+      "Bash(curl -s \"https://ctu1.phc.ox.ac.uk/feverpain/css/main.css\")"
+    ]
+  }
+}
