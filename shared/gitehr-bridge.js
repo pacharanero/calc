@@ -133,6 +133,23 @@ export function saveButtonLabel() {
 }
 
 /**
+ * Format a plain-text summary of the result without copying it.
+ * Useful for populating a clipboard-preview textarea.
+ *
+ * @param {Object} data  Same schema as sendResult().
+ * @returns {string}
+ */
+export function formatClipboardText(data) {
+  return [
+    `Calculator: ${data.calculator}`,
+    `Result: ${data.result}`,
+    `Interpretation: ${data.interpretation}`,
+    `Reference: ${data.reference}`,
+    `Timestamp: ${new Date().toISOString()}`,
+  ].join('\n');
+}
+
+/**
  * Copy a plain-text summary of the result to the clipboard.
  * Useful in standalone mode as a fallback action.
  *
@@ -140,16 +157,8 @@ export function saveButtonLabel() {
  * @returns {Promise<boolean>} true if succeeded
  */
 export async function copyToClipboard(data) {
-  const text = [
-    `Calculator: ${data.calculator}`,
-    `Result: ${data.result}`,
-    `Interpretation: ${data.interpretation}`,
-    `Reference: ${data.reference}`,
-    `Timestamp: ${new Date().toISOString()}`,
-  ].join('\n');
-
   try {
-    await navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(formatClipboardText(data));
     return true;
   } catch {
     return false;
