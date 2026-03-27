@@ -45,6 +45,7 @@
     .calc-card-stripe.psychiatry { background: var(--rcpch-mid-blue); }
     .calc-card-stripe.anthropometry { background: var(--rcpch-green); }
     .calc-card-stripe.endocrinology { background: var(--rcpch-light-blue); }
+    .calc-card-stripe.infectious-disease { background: #0E7490; }
 :3
     .tag {
       display: inline-block;
@@ -90,6 +91,27 @@
 <!-- Calculator grid -->
 <main class="max-w-4xl mx-auto px-4 py-8">
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+    <!-- FeverPAIN Score -->
+    <a href="calculators/feverpain.html" class="calc-card">
+      <div class="calc-card-stripe infectious-disease"></div>
+      <div class="p-5 flex flex-col gap-2 flex-1">
+        <div class="flex items-start justify-between gap-2">
+          <h2 class="font-bold text-base leading-snug" style="color: var(--rcpch-dark-blue);">
+            FeverPAIN<br>Clinical Score
+          </h2>
+          <span class="tag">Infectious Disease</span>
+        </div>
+        <p class="text-sm text-gray-600 flex-1">
+          5-item validated score guiding antibiotic prescribing in acute sore throat.
+          Validated for adults and children aged&nbsp;3+.
+        </p>
+        <div class="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+          <span class="text-xs text-gray-400">5 items · &lt;1 min</span>
+          <span style="color: var(--rcpch-mid-blue);" class="text-sm font-semibold">Open →</span>
+        </div>
+      </div>
+    </a>
 
     <!-- ASRS ADHD Screener -->
     <a href="calculators/adhd-questionnaire-asrs111.html" class="calc-card">
