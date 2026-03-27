@@ -121,6 +121,80 @@ Any field the host passes as a URL query parameter is available via `getPatientC
 
 ---
 
+## Result Card UI Conventions
+
+Every calculator renders a result card when the user has completed all inputs. The result card must contain these elements in this order:
+
+### 1. Score summary and interpretation
+
+Score tiles, a result badge (positive/negative/severity level), and a human-readable interpretation string. These are populated by JavaScript from the scoring function.
+
+### 2. Breakdown (optional but recommended)
+
+A collapsible `<details>` block showing per-item or per-criterion scores. Helps the clinician understand how the result was reached without cluttering the primary view.
+
+### 3. Clipboard preview textarea
+
+Before the action buttons, render an editable `<textarea>` pre-filled with the plain-text summary that will be copied to the clipboard:
+
+```html
+<div id="clipboard-preview-wrap" class="hidden mb-4">
+  <label for="clipboard-preview"
+         class="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1">
+    Text to copy — edit if needed
+  </label>
+  <textarea
+    id="clipboard-preview"
+    rows="7"
+    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono resize-y"
+    style="outline-color: var(--rcpch-mid-blue);"
+  ></textarea>
+</div>
+```
+
+JavaScript populates the textarea when the result is first shown, and hides it again on "Start over". The copy button reads directly from `previewTA.value` rather than regenerating the text, so any edits the clinician makes are preserved.
+
+Use `formatClipboardText(resultData)` from the bridge for simple results, or a bespoke `buildSummaryText()` function for calculators whose clipboard output is richer than the generic schema (e.g. FeverPAIN, which includes a clinical narrative derived from the input values).
+
+#### Dynamic refresh for treatment decisions
+
+Any post-result selection that changes the clinical recommendation — prescribing strategy, dosing decision, follow-up advice — **must update the textarea in real time**. Store the last-computed score and interpretation at module level, and call a `refreshPreview()` function from every change listener that affects the summary text:
+
+```js
+let currentScore = null;
+let currentInterp = null;
+
+function refreshPreview() {
+  if (currentScore === null) return;
+  const previewTA = document.getElementById('clipboard-preview');
+  if (previewTA) previewTA.value = buildSummaryText(currentScore, currentInterp);
+}
+
+// In renderActionButtons / showResult:
+currentScore = score;
+currentInterp = interp;
+
+// In every treatment-decision change listener:
+strategyRadio.addEventListener('change', () => { selectedStrategy = r.value; refreshPreview(); });
+delayDaysSelect.addEventListener('change', () => { delayDays = dd.value; refreshPreview(); });
+```
+
+Clear `currentScore` and `currentInterp` on "Start over".
+
+### 4. Action buttons
+
+Rendered by JavaScript after context detection via `getContext()`:
+
+| Context      | Primary button                            | Secondary button | Always present              |
+| ------------ | ----------------------------------------- | ---------------- | --------------------------- |
+| `tauri`      | "Save to patient record" (`sendResult`)   | —                | "Copy result", "Start over" |
+| `iframe`     | "Send result" (`sendResult`)              | —                | "Copy result", "Start over" |
+| `standalone` | —                                         | —                | "Copy result", "Start over" |
+
+Use `saveButtonLabel()` for the primary button label. The copy button always copies from the preview textarea.
+
+---
+
 ## Adding a new calculator
 
 1. Create `ui/calculators/<calculator-name>.html`
