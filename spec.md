@@ -147,7 +147,7 @@ Before the action buttons, render an editable `<textarea>` pre-filled with the p
     id="clipboard-preview"
     rows="7"
     class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono resize-y"
-    style="outline-color: var(--rcpch-mid-blue);"
+    style="outline-color: var(--mid-blue);"
   ></textarea>
 </div>
 ```

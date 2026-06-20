@@ -12,6 +12,7 @@ Read these files in full — they are the source of truth:
 
 - `spec.md` — architecture, bridge API, result-card conventions, constraints
 - `shared/gitehr-bridge.js` — the bridge module you will import
+- `shared/styles.css` — the shared stylesheet (do not duplicate these styles locally)
 - An existing calculator (e.g. `calculators/feverpain.html`) — study its structure end-to-end before writing a single line
 
 Also check `calculator-roadmap.md` for any notes on the calculator you are about to build.
@@ -32,23 +33,26 @@ One self-contained HTML file. No build step. No external JS beyond the bridge an
 
 ```
 <head>
-  charset, viewport, title
+  charset, viewport, title ("Tool Name — GitEHR Clinical Calculators")
   DaisyUI 5 + Tailwind CSS 4 via CDN          ← shared CDN stack
+  <link rel="stylesheet" href="../shared/styles.css" />   ← shared styles
   <style type="text/tailwindcss">
-    RCPCH brand tokens (--rcpch-dark-blue etc.)
-    Layout, question rows, result card, buttons
+    /* ONLY calculator-specific rules here */
+    /* Do NOT redefine body, .site-header, .disclaimer, */
+    /* .freq-group/.freq-btn, .progress-*, .result-card, */
+    /* .calc-btn/.calc-btn-outline, details/summary      */
   </style>
 </head>
 
 <body>
-  <header class="site-header">               ← RCPCH branded header bar
-  <div style="background: dark-blue">        ← hero / intro band with live counter
+  <header class="site-header">               ← header bar (styles from shared)
+  <div style="background: var(--dark-blue)"> ← hero / intro band with live counter
   <div class="disclaimer">                   ← clinical disclaimer
   <main>
     <!-- input fields / questions -->
 
     <!-- Result card (hidden until complete) -->
-    <div id="result-card" class="hidden">
+    <div id="result-card" class="result-card hidden">
       <!-- score tiles -->
       <!-- interpretation text -->
       <!-- breakdown (collapsible details) -->
@@ -57,14 +61,15 @@ One self-contained HTML file. No build step. No external JS beyond the bridge an
       <!-- Clipboard preview -->
       <div id="clipboard-preview-wrap" class="hidden mb-4">
         <label for="clipboard-preview" ...>Text to copy — edit if needed</label>
-        <textarea id="clipboard-preview" rows="7|10" class="... font-mono resize-y"></textarea>
+        <textarea id="clipboard-preview" rows="7|10" class="... font-mono resize-y"
+                  style="outline-color: var(--mid-blue);"></textarea>
       </div>
 
       <!-- Action buttons (rendered by JS) -->
       <div id="result-actions"></div>
     </div>
   </main>
-  <footer>
+  <footer>GitEHR Clinical Calculators · Not a substitute for clinical judgement</footer>
 
   <script type="module">
     import { sendResult, getPatientContext, getContext,
@@ -72,32 +77,33 @@ One self-contained HTML file. No build step. No external JS beyond the bridge an
       from '../shared/gitehr-bridge.js';
 
     // 1. Question / field data
-    // 2. State object
+    // 2. State object (answers, treatment decisions, currentScore, currentInterp)
     // 3. Scoring function (mirrors Python exactly)
     // 4. Interpret function
     // 5. Render inputs
     // 6. Handle input events → call showResult() when complete
-    // 7. showResult()
+    // 7. showResult() → sets currentScore / currentInterp
     // 8. renderBreakdown()
     // 9. renderActionButtons()   ← see conventions below
-    // 10. applyPatientContext()
-    // 11. Init calls
+    // 10. refreshPreview()       ← called by any post-result selection change
+    // 11. applyPatientContext()
+    // 12. Init calls
   </script>
 </body>
 ```
 
 ---
 
-## RCPCH brand tokens (copy verbatim into every calculator)
+## Brand tokens (from shared/styles.css — reference only, do not redeclare)
 
 ```css
 :root {
-  --rcpch-dark-blue:  #003087;
-  --rcpch-mid-blue:   #005EB8;
-  --rcpch-light-blue: #41B6E6;
-  --rcpch-green:      #009639;
-  --rcpch-warm-grey:  #F2F2F0;
-  --rcpch-mid-grey:   #D9D9D9;
+  --dark-blue:   #003087;
+  --mid-blue:    #005EB8;
+  --light-blue:  #41B6E6;
+  --color-green: #009639;
+  --warm-grey:   #F2F2F0;
+  --mid-grey:    #D9D9D9;
 }
 ```
 
@@ -147,7 +153,7 @@ Follow the order in `spec.md § Result Card UI Conventions`:
 
 ### Clipboard preview textarea
 
-Always present. Populate it from `renderActionButtons` (or equivalent) when the result is first shown:
+Always present. Populate it from `renderActionButtons` when the result is first shown:
 
 ```js
 const previewWrap = document.getElementById('clipboard-preview-wrap');
@@ -162,6 +168,32 @@ Reset it on "Start over":
 document.getElementById('clipboard-preview-wrap').classList.add('hidden');
 ```
 
+### Dynamic refresh for treatment decisions
+
+Any post-result selection (prescribing strategy, dosing decision, follow-up choice) must
+update the preview in real time. Store score/interp at module level and refresh on every
+change:
+
+```js
+let currentScore = null;
+let currentInterp = null;
+
+function refreshPreview() {
+  if (currentScore === null) return;
+  const previewTA = document.getElementById('clipboard-preview');
+  if (previewTA) previewTA.value = buildSummaryText(currentScore, currentInterp);
+}
+
+// In renderActionButtons / showResult:
+currentScore = score;
+currentInterp = interp;
+
+// In every treatment-decision change listener:
+radioInput.addEventListener('change', () => { selectedStrategy = r.value; refreshPreview(); });
+```
+
+Clear `currentScore` / `currentInterp` on "Start over".
+
 ### Action buttons
 
 ```js
@@ -174,15 +206,15 @@ function renderActionButtons(resultData) {
 
   if (ctx === 'tauri' || ctx === 'iframe') {
     const saveBtn = document.createElement('button');
-    saveBtn.className = 'rcpch-btn';
+    saveBtn.className = 'calc-btn';
     saveBtn.textContent = saveButtonLabel();
     saveBtn.addEventListener('click', () => sendResult(resultData));
     container.appendChild(saveBtn);
   }
 
   const copyBtn = document.createElement('button');
-  copyBtn.className = 'rcpch-btn' +
-    (ctx === 'tauri' || ctx === 'iframe' ? ' rcpch-btn-outline' : '');
+  copyBtn.className = 'calc-btn' +
+    (ctx === 'tauri' || ctx === 'iframe' ? ' calc-btn-outline' : '');
   copyBtn.textContent = 'Copy result';
   copyBtn.addEventListener('click', async () => {
     try {
@@ -196,7 +228,7 @@ function renderActionButtons(resultData) {
   container.appendChild(copyBtn);
 
   const resetBtn = document.createElement('button');
-  resetBtn.className = 'rcpch-btn rcpch-btn-outline';
+  resetBtn.className = 'calc-btn calc-btn-outline';
   resetBtn.textContent = 'Start over';
   resetBtn.addEventListener('click', resetAll);
   container.appendChild(resetBtn);
@@ -207,49 +239,23 @@ function renderActionButtons(resultData) {
 
 ## Patient context
 
-Always call `applyPatientContext()` on init. If the host passes patient info via URL params, display it unobtrusively in the header:
-
-```js
-function applyPatientContext() {
-  const ctx = getPatientContext();
-  if (ctx.given_name || ctx.family_name || ctx.patient_id) {
-    // append a small tag near the header subtitle
-  }
-}
-```
-
-Include `patient_context: getPatientContext()` in the `resultData` payload passed to `sendResult`.
-
----
-
-## Button CSS classes
-
-```css
-.rcpch-btn {
-  background: var(--rcpch-mid-blue); color: white;
-  border: none; border-radius: 0.4rem;
-  padding: 0.6rem 1.4rem; font-weight: 600; cursor: pointer;
-}
-.rcpch-btn:hover { background: var(--rcpch-dark-blue); }
-.rcpch-btn-outline {
-  background: transparent; color: var(--rcpch-mid-blue);
-  border: 2px solid var(--rcpch-mid-blue);
-}
-.rcpch-btn-outline:hover { background: var(--rcpch-mid-blue); color: white; }
-```
+Always call `applyPatientContext()` on init. If the host passes patient info via URL params,
+display it unobtrusively in the header. Include `patient_context: getPatientContext()` in the
+`resultData` payload.
 
 ---
 
 ## Checklist before finishing
 
 - [ ] Scoring output matches Python test vectors for all significant inputs
-- [ ] Result card shows in correct order: tiles → interpretation → breakdown → clipboard preview → action buttons
-- [ ] Clipboard preview textarea appears when result is shown, hidden on reset
-- [ ] Copy button reads from `previewTA.value`, not from a re-generated string
-- [ ] `sendResult` is called with the full payload including `working` and `reference`
-- [ ] `applyPatientContext()` is called on init
-- [ ] "Start over" resets all answers, all visual state, hides result card and preview, scrolls to top
-- [ ] Works as `file://` or over HTTP (check for any module import that would break `file://`)
+- [ ] Result card order: tiles → interpretation → breakdown → clipboard preview → action buttons
+- [ ] Clipboard preview appears on result, hides on reset
+- [ ] Copy button reads `previewTA.value` (not a re-generated string)
+- [ ] Treatment decision changes call `refreshPreview()` immediately
+- [ ] `sendResult` called with full payload including `working` and `reference`
+- [ ] `applyPatientContext()` called on init
+- [ ] "Start over" resets all answers, visual state, clears `currentScore`/`currentInterp`, hides result card and preview, scrolls to top
+- [ ] No RCPCH branding anywhere — use "GitEHR Clinical Calculators" in title, header, footer
+- [ ] No shared styles redeclared locally (`shared/styles.css` covers them)
 - [ ] Keyboard navigable; sufficient colour contrast; screen-reader labels on interactive groups
-- [ ] CDN dependency failure is handled gracefully (show a fallback message if Tailwind/DaisyUI doesn't load)
 - [ ] Card added to `index.html`

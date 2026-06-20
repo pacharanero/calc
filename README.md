@@ -1,3 +1,19 @@
+> [!IMPORTANT]
+> **This repository has moved and is no longer maintained here.**
+>
+> The clinical calculators are now developed inside the main **GitEHR** repository: <https://github.com/gitehr/gitehr>
+>
+> They are built on a shared Rust engine (`calc-core`) that drives every surface from one source of truth - the CLI (`calc` / `gitehr calc`), the MCP server, the GitEHR desktop GUI, and the single-file web calculators. In the GitEHR repo:
+>
+> - Engine and result schema: `calc-core/`
+> - CLI (standalone `calc` binary + reused by `gitehr calc`): `calc-cli/`
+> - Single-file web calculators and the shared bridge: `calc-web/`
+> - Specification and roadmap: `spec/calculators.md`, `spec/calculator-roadmap.md`
+>
+> Please direct all new work, issues, and contributions there. The contents below are retained for historical reference only.
+
+---
+
 # Clippable Clinical Calculators
 
 Clinicians need access to clinical digital tools to provide good care. Yet the commercial incentives to add these calculators to EHRs are weak, and the technical and compliance barriers to building them are high. The result is a patchwork of calculators scattered across the web, often behind paywalls, and frequently implemented in ways that are difficult to use at the point of care.

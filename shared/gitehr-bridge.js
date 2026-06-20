@@ -1,7 +1,7 @@
 /**
  * gitehr-bridge.js
  *
- * Tiny context-detection and result-dispatch module for RCPCH clinical
+ * Tiny context-detection and result-dispatch module for GitEHR clinical
  * calculator HTML files.
  *
  * Each calculator HTML file imports this module and calls sendResult(data)

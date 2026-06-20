@@ -3,42 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FeverPAIN Clinical Score — RCPCH Clinical Calculators</title>
+  <title>FeverPAIN Clinical Score — GitEHR Clinical Calculators</title>
 
   <link href="https://cdn.jsdelivr.net/npm/daisyui@5/daisyui.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
+  <link rel="stylesheet" href="../shared/styles.css" />
   <style type="text/tailwindcss">
-    /* -----------------------------------------------------------------------
-       RCPCH brand tokens
-    ----------------------------------------------------------------------- */
-    :root {
-      --rcpch-dark-blue:   #003087;
-      --rcpch-mid-blue:    #005EB8;
-      --rcpch-light-blue:  #41B6E6;
-      --rcpch-green:       #009639;
-      --rcpch-warm-grey:   #F2F2F0;
-      --rcpch-mid-grey:    #D9D9D9;
-    }
-
-    body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: var(--rcpch-warm-grey);
-      color: #1a1a2e;
-    }
-
-    /* -----------------------------------------------------------------------
-       Header
-    ----------------------------------------------------------------------- */
-    .site-header { background: var(--rcpch-dark-blue); color: white; }
-    .site-header a { color: #9ecef7; }
-    .site-header a:hover { color: white; }
-
     /* -----------------------------------------------------------------------
        Section headers
     ----------------------------------------------------------------------- */
     .section-header { color: white; }
-    .section-header.history    { background: var(--rcpch-dark-blue); }
+    .section-header.history     { background: var(--dark-blue); }
     .section-header.examination { background: #5a7ca8; }
 
     /* -----------------------------------------------------------------------
@@ -49,8 +25,8 @@
       border-left: 4px solid transparent;
       transition: border-color 0.15s;
     }
-    .question-row.answered        { border-left-color: var(--rcpch-light-blue); }
-    .question-row.scoring-positive { border-left-color: var(--rcpch-mid-blue); }
+    .question-row.answered         { border-left-color: var(--light-blue); }
+    .question-row.scoring-positive { border-left-color: var(--mid-blue); }
 
     /* Scoring indicator pill */
     .score-pill {
@@ -58,113 +34,26 @@
       padding: 0.15rem 0.5rem;
       border-radius: 9999px;
       background: #e8f0fb;
-      color: var(--rcpch-dark-blue);
+      color: var(--dark-blue);
       border: 1px solid #b8d0f0;
       white-space: nowrap;
     }
     .question-row.scoring-positive .score-pill {
-      background: var(--rcpch-mid-blue);
+      background: var(--mid-blue);
       color: white;
-      border-color: var(--rcpch-mid-blue);
+      border-color: var(--mid-blue);
     }
 
     /* -----------------------------------------------------------------------
-       Segmented control (radio buttons)
+       Result card variants
     ----------------------------------------------------------------------- */
-    .freq-group {
-      display: flex;
-      gap: 0;
-      border-radius: 0.5rem;
-      overflow: hidden;
-      border: 1px solid var(--rcpch-mid-grey);
-    }
-    .freq-btn {
-      flex: 1;
-      padding: 0.45rem 0.25rem;
-      font-size: 0.72rem;
-      line-height: 1.2;
-      text-align: center;
-      background: white;
-      border: none;
-      border-right: 1px solid var(--rcpch-mid-grey);
-      cursor: pointer;
-      transition: background 0.1s, color 0.1s;
-      -webkit-tap-highlight-color: transparent;
-      outline-offset: -2px;
-    }
-    .freq-btn:last-child { border-right: none; }
-    .freq-btn:hover { background: #e8f3fb; }
-    .freq-btn:focus-visible {
-      outline: 2px solid var(--rcpch-mid-blue);
-      z-index: 1;
-    }
-    .freq-btn.selected {
-      background: var(--rcpch-mid-blue);
-      color: white;
-      font-weight: 600;
-    }
-
-    /* -----------------------------------------------------------------------
-       Progress bar
-    ----------------------------------------------------------------------- */
-    .progress-track {
-      height: 6px;
-      background: var(--rcpch-mid-grey);
-      border-radius: 9999px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      background: var(--rcpch-light-blue);
-      border-radius: 9999px;
-      transition: width 0.3s ease;
-    }
-
-    /* -----------------------------------------------------------------------
-       Result card
-    ----------------------------------------------------------------------- */
-    .result-card      { border-top: 5px solid var(--rcpch-dark-blue); }
-    .result-no-rx     { border-top-color: var(--rcpch-green); }
+    .result-no-rx     { border-top-color: var(--color-green); }
     .result-delayed   { border-top-color: #d97706; }
     .result-immediate { border-top-color: #dc2626; }
 
-    .badge-no-rx     { background: var(--rcpch-green); color: white; }
+    .badge-no-rx     { background: var(--color-green); color: white; }
     .badge-delayed   { background: #d97706; color: white; }
     .badge-immediate { background: #dc2626; color: white; }
-
-    /* -----------------------------------------------------------------------
-       Disclaimer
-    ----------------------------------------------------------------------- */
-    .disclaimer {
-      border-left: 4px solid var(--rcpch-light-blue);
-      background: #f0f7fd;
-    }
-
-    /* -----------------------------------------------------------------------
-       Buttons
-    ----------------------------------------------------------------------- */
-    .rcpch-btn {
-      background: var(--rcpch-mid-blue);
-      color: white;
-      border: none;
-      border-radius: 0.4rem;
-      padding: 0.6rem 1.4rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .rcpch-btn:hover { background: var(--rcpch-dark-blue); }
-    .rcpch-btn-outline {
-      background: transparent;
-      color: var(--rcpch-mid-blue);
-      border: 2px solid var(--rcpch-mid-blue);
-    }
-    .rcpch-btn-outline:hover {
-      background: var(--rcpch-mid-blue);
-      color: white;
-    }
-
-    html { scroll-behavior: smooth; }
   </style>
 </head>
 
@@ -181,8 +70,7 @@
         <path d="M13 20h14M20 13v14" stroke="white" stroke-width="3" stroke-linecap="round"/>
       </svg>
       <div>
-        <div class="font-bold text-sm leading-tight">RCPCH Clinical Calculators</div>
-        <div class="text-xs opacity-70">rcpch.ac.uk</div>
+        <div class="font-bold text-sm leading-tight">GitEHR Clinical Calculators</div>
       </div>
     </div>
     <a href="../index.html" class="text-xs no-underline flex items-center gap-1">← All calculators</a>
@@ -192,14 +80,14 @@
 <!-- =========================================================================
      Hero
 ========================================================================== -->
-<div style="background: var(--rcpch-dark-blue); color: white;" class="px-4 py-8">
+<div style="background: var(--dark-blue); color: white;" class="px-4 py-8">
   <div class="max-w-3xl mx-auto">
     <div class="flex items-start gap-4">
       <div class="flex-1">
         <p class="text-xs font-semibold uppercase tracking-widest opacity-60 mb-1">Clinical Scoring Tool · Antibiotic Stewardship</p>
         <h1 class="text-2xl font-bold mb-2 leading-tight">
           FeverPAIN Clinical Score<br>
-          <span style="color: var(--rcpch-light-blue);">Acute Sore Throat</span>
+          <span style="color: var(--light-blue);">Acute Sore Throat</span>
         </h1>
         <p class="text-sm opacity-80 max-w-xl">
           Five-item validated score for guiding antibiotic prescribing in acute sore throat.
@@ -208,7 +96,7 @@
       </div>
       <!-- Live score counter -->
       <div class="text-center bg-white bg-opacity-10 rounded-xl p-4 min-w-[80px] flex-shrink-0">
-        <div id="counter-display" class="text-3xl font-bold" style="color: var(--rcpch-light-blue);">–</div>
+        <div id="counter-display" class="text-3xl font-bold" style="color: var(--light-blue);">–</div>
         <div class="text-xs opacity-70 mt-0.5">Score<br>(max 5)</div>
       </div>
     </div>
@@ -240,11 +128,11 @@
   <div class="bg-white rounded-lg px-5 py-3 text-xs shadow-sm text-gray-600">
     <span class="font-semibold text-gray-700 mr-3">Scoring criteria (1 point each):</span>
     <span class="inline-flex flex-wrap gap-x-5 gap-y-1 mt-1">
-      <span><strong style="color:var(--rcpch-dark-blue)">F</strong>ever in last 24 h</span>
-      <span><strong style="color:var(--rcpch-dark-blue)">P</strong>urulence (pus on tonsils)</span>
-      <span><strong style="color:var(--rcpch-dark-blue)">A</strong>ttend rapidly (≤ 3 days)</span>
-      <span><strong style="color:var(--rcpch-dark-blue)">I</strong>nflamed tonsils (severely)</span>
-      <span><strong style="color:var(--rcpch-dark-blue)">N</strong>o cough / coryza</span>
+      <span><strong style="color:var(--dark-blue)">F</strong>ever in last 24 h</span>
+      <span><strong style="color:var(--dark-blue)">P</strong>urulence (pus on tonsils)</span>
+      <span><strong style="color:var(--dark-blue)">A</strong>ttend rapidly (≤ 3 days)</span>
+      <span><strong style="color:var(--dark-blue)">I</strong>nflamed tonsils (severely)</span>
+      <span><strong style="color:var(--dark-blue)">N</strong>o cough / coryza</span>
     </span>
   </div>
 </div>
@@ -278,17 +166,17 @@
 
     <div class="flex items-center gap-3 mb-4">
       <span id="result-badge" class="text-sm font-bold px-3 py-1 rounded-full">—</span>
-      <h2 class="text-lg font-bold" style="color: var(--rcpch-dark-blue);">FeverPAIN Score Result</h2>
+      <h2 class="text-lg font-bold" style="color: var(--dark-blue);">FeverPAIN Score Result</h2>
     </div>
 
     <!-- Score tiles -->
     <div class="grid grid-cols-3 gap-3 mb-5">
-      <div class="rounded-lg p-4 text-center" style="background: var(--rcpch-warm-grey);">
-        <div id="res-score" class="text-3xl font-bold" style="color: var(--rcpch-dark-blue);">–</div>
+      <div class="rounded-lg p-4 text-center" style="background: var(--warm-grey);">
+        <div id="res-score" class="text-3xl font-bold" style="color: var(--dark-blue);">–</div>
         <div class="text-xs text-gray-500 mt-0.5">Score<br><span class="opacity-60">(max 5)</span></div>
       </div>
-      <div class="rounded-lg p-4 col-span-2 flex flex-col justify-center" style="background: var(--rcpch-warm-grey);">
-        <div id="res-strep-rate" class="text-lg font-bold" style="color: var(--rcpch-dark-blue);"></div>
+      <div class="rounded-lg p-4 col-span-2 flex flex-col justify-center" style="background: var(--warm-grey);">
+        <div id="res-strep-rate" class="text-lg font-bold" style="color: var(--dark-blue);"></div>
         <div class="text-xs text-gray-500 mt-0.5">estimated streptococcus isolation rate</div>
       </div>
     </div>
@@ -301,7 +189,7 @@
 
     <!-- Interpretation -->
     <p id="res-interpretation" class="text-sm leading-relaxed text-gray-700 mb-5 p-3 rounded-lg"
-       style="background: var(--rcpch-warm-grey);"></p>
+       style="background: var(--warm-grey);"></p>
 
     <!-- Prescribing strategy -->
     <div class="mb-5">
@@ -320,6 +208,19 @@
       <em>Health Technol Assess.</em> 2014;18(6):1–102.
     </div>
 
+    <!-- Clipboard preview -->
+    <div id="clipboard-preview-wrap" class="hidden mb-4">
+      <label for="clipboard-preview" class="text-xs font-semibold text-gray-500 uppercase tracking-wide block mb-1">
+        Text to copy — edit if needed
+      </label>
+      <textarea
+        id="clipboard-preview"
+        rows="10"
+        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono resize-y"
+        style="outline-color: var(--mid-blue);"
+      ></textarea>
+    </div>
+
     <!-- Action buttons -->
     <div class="flex flex-wrap gap-2" id="result-actions"></div>
   </div>
@@ -332,11 +233,7 @@
      Footer
 ========================================================================== -->
 <footer class="text-center text-xs text-gray-400 pb-8">
-  RCPCH Clinical Calculators ·
-  <a href="https://github.com/rcpch/clinical-calculators"
-     target="_blank" rel="noopener"
-     style="color: var(--rcpch-mid-blue);">GitHub</a>
-  · Not a substitute for clinical judgement
+  GitEHR Clinical Calculators · Not a substitute for clinical judgement
 </footer>
 
 <!-- =========================================================================
@@ -464,6 +361,8 @@ const REQUIRED_IDS = ALL_FIELDS.filter(f => f.required).map(f => f.id);
 const answers = {};
 let selectedStrategy = null;
 let delayDays = null;
+let currentScore = null;
+let currentInterp = null;
 
 // ---------------------------------------------------------------------------
 // Scoring (mirrors original main.js exactly)
@@ -556,7 +455,7 @@ function renderSection(fields, containerId) {
       : `<span class="text-xs text-gray-400 flex-shrink-0">summary only</span>`;
 
     const requiredMark = field.required
-      ? ` <span style="color: var(--rcpch-mid-blue); font-weight: bold;">*</span>`
+      ? ` <span style="color: var(--mid-blue); font-weight: bold;">*</span>`
       : '';
 
     row.innerHTML = `
@@ -712,11 +611,11 @@ function renderCriteriaBreakdown(criteria) {
     const chip = document.createElement('div');
     chip.className = `rounded-lg p-3 text-center text-xs ${met ? 'font-semibold' : 'text-gray-500 bg-gray-100'}`;
     if (met) {
-      chip.style.background = 'var(--rcpch-mid-blue)';
+      chip.style.background = 'var(--mid-blue)';
       chip.style.color = 'white';
     }
     chip.innerHTML = `
-      <div class="text-xl font-bold mb-0.5" style="color:${met ? 'white' : 'var(--rcpch-mid-grey)'}">${letter}</div>
+      <div class="text-xl font-bold mb-0.5" style="color:${met ? 'white' : 'var(--mid-grey)'}">${letter}</div>
       <div class="leading-snug" style="white-space:pre-line">${label}</div>
       <div class="mt-1 text-xs font-bold">${met ? '✓ +1' : '✗ 0'}</div>
     `;
@@ -743,7 +642,7 @@ function renderStrategyOptions() {
     wrap.className = 'flex items-center gap-3 text-sm cursor-pointer px-2 py-1.5 rounded-lg hover:bg-gray-50';
     wrap.innerHTML = `
       <input type="radio" name="strategy" value="${opt.value}"
-             class="w-4 h-4 flex-shrink-0" style="accent-color: var(--rcpch-mid-blue);" />
+             class="w-4 h-4 flex-shrink-0" style="accent-color: var(--mid-blue);" />
       <span>${opt.label}</span>
       ${opt.hasDelay ? `
         <select id="delay-days"
@@ -758,10 +657,10 @@ function renderStrategyOptions() {
   });
 
   container.querySelectorAll('input[type=radio]').forEach(r => {
-    r.addEventListener('change', () => { selectedStrategy = r.value; });
+    r.addEventListener('change', () => { selectedStrategy = r.value; refreshPreview(); });
   });
   const dd = document.getElementById('delay-days');
-  if (dd) dd.addEventListener('change', () => { delayDays = dd.value; });
+  if (dd) dd.addEventListener('change', () => { delayDays = dd.value; refreshPreview(); });
 }
 
 // ---------------------------------------------------------------------------
@@ -813,6 +712,12 @@ function buildSummaryText(score, interp) {
   return lines.join('\n');
 }
 
+function refreshPreview() {
+  if (currentScore === null) return;
+  const previewTA = document.getElementById('clipboard-preview');
+  if (previewTA) previewTA.value = buildSummaryText(currentScore, currentInterp);
+}
+
 // ---------------------------------------------------------------------------
 // Action buttons
 // ---------------------------------------------------------------------------
@@ -839,25 +744,34 @@ function renderActionButtons(score, interp, criteria) {
                'Little P, Hobbs FR, Moore M, et al. Health Technol Assess. 2014;18(6):1-102.',
   };
 
+  // Store for dynamic preview refresh when treatment decisions change
+  currentScore = score;
+  currentInterp = interp;
+
+  // Populate clipboard preview textarea
+  const previewWrap = document.getElementById('clipboard-preview-wrap');
+  const previewTA   = document.getElementById('clipboard-preview');
+  previewTA.value = buildSummaryText(score, interp);
+  previewWrap.classList.remove('hidden');
+
   const ctx = getContext();
 
   if (ctx === 'tauri' || ctx === 'iframe') {
     const saveBtn = document.createElement('button');
-    saveBtn.className = 'rcpch-btn';
+    saveBtn.className = 'calc-btn';
     saveBtn.textContent = saveButtonLabel();
     saveBtn.addEventListener('click', () => sendResult(resultData));
     container.appendChild(saveBtn);
   }
 
-  // Copy full clinical summary (inputs + score + strategy) to clipboard
+  // Copy full clinical summary — copies the (possibly edited) preview text
   const copyBtn = document.createElement('button');
-  copyBtn.className = 'rcpch-btn' +
-    (ctx === 'tauri' || ctx === 'iframe' ? ' rcpch-btn-outline' : '');
+  copyBtn.className = 'calc-btn' +
+    (ctx === 'tauri' || ctx === 'iframe' ? ' calc-btn-outline' : '');
   copyBtn.textContent = 'Copy to clipboard';
   copyBtn.addEventListener('click', async () => {
-    const text = buildSummaryText(score, interp);
     try {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(previewTA.value);
       copyBtn.textContent = 'Copied ✓';
     } catch {
       copyBtn.textContent = 'Copy failed';
@@ -868,12 +782,14 @@ function renderActionButtons(score, interp, criteria) {
 
   // Reset
   const resetBtn = document.createElement('button');
-  resetBtn.className = 'rcpch-btn rcpch-btn-outline';
+  resetBtn.className = 'calc-btn calc-btn-outline';
   resetBtn.textContent = 'Start over';
   resetBtn.addEventListener('click', () => {
     Object.keys(answers).forEach(k => delete answers[k]);
     selectedStrategy = null;
     delayDays = null;
+    currentScore = null;
+    currentInterp = null;
 
     document.querySelectorAll('.freq-btn').forEach(b => {
       b.classList.remove('selected');
@@ -888,6 +804,7 @@ function renderActionButtons(score, interp, criteria) {
     if (ta) ta.value = '';
 
     document.getElementById('result-card').classList.add('hidden');
+    document.getElementById('clipboard-preview-wrap').classList.add('hidden');
     document.getElementById('counter-display').textContent = '–';
     document.getElementById('counter-display').style.color = 'rgba(255,255,255,0.5)';
     updateProgress();

@@ -3,26 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RCPCH Clinical Calculators</title>
+  <title>GitEHR Clinical Calculators</title>
 
   <link href="https://cdn.jsdelivr.net/npm/daisyui@5/daisyui.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
+  <link rel="stylesheet" href="shared/styles.css" />
   <style type="text/tailwindcss">
-    :root {
-      --rcpch-dark-blue:  #003087;
-      --rcpch-mid-blue:   #005EB8;
-      --rcpch-light-blue: #41B6E6;
-      --rcpch-green:      #009639;
-      --rcpch-warm-grey:  #F2F2F0;
-      --rcpch-mid-grey:   #D9D9D9;
-    }
-    body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: var(--rcpch-warm-grey);
-    }
-    .site-header { background: var(--rcpch-dark-blue); color: white; }
-
     .calc-card {
       background: white;
       border-radius: 0.75rem;
@@ -38,15 +25,12 @@
       box-shadow: 0 4px 12px rgba(0,48,135,0.15);
       transform: translateY(-2px);
     }
-    .calc-card-stripe {
-      height: 5px;
-      background: var(--rcpch-mid-blue);
-    }
-    .calc-card-stripe.psychiatry { background: var(--rcpch-mid-blue); }
-    .calc-card-stripe.anthropometry { background: var(--rcpch-green); }
-    .calc-card-stripe.endocrinology { background: var(--rcpch-light-blue); }
+    .calc-card-stripe                    { height: 5px; background: var(--mid-blue); }
+    .calc-card-stripe.psychiatry         { background: var(--mid-blue); }
+    .calc-card-stripe.anthropometry      { background: var(--color-green); }
+    .calc-card-stripe.endocrinology      { background: var(--light-blue); }
     .calc-card-stripe.infectious-disease { background: #0E7490; }
-:3
+
     .tag {
       display: inline-block;
       font-size: 0.65rem;
@@ -56,7 +40,7 @@
       padding: 0.15rem 0.5rem;
       border-radius: 9999px;
       background: #e8f0fb;
-      color: var(--rcpch-dark-blue);
+      color: var(--dark-blue);
     }
   </style>
 </head>
@@ -70,14 +54,14 @@
       <path d="M13 20h14M20 13v14" stroke="white" stroke-width="3" stroke-linecap="round"/>
     </svg>
     <div>
-      <div class="font-bold leading-tight">RCPCH Clinical Calculators</div>
+      <div class="font-bold leading-tight">GitEHR Clinical Calculators</div>
       <div class="text-xs opacity-60">Evidence-based tools for healthcare professionals</div>
     </div>
   </div>
 </header>
 
 <!-- Hero -->
-<div style="background: var(--rcpch-dark-blue); color: white;" class="px-4 pb-10 pt-4">
+<div style="background: var(--dark-blue); color: white;" class="px-4 pb-10 pt-4">
   <div class="max-w-4xl mx-auto">
     <p class="text-sm opacity-70 mb-1">Self-contained · Open source · GitEHR compatible</p>
     <h1 class="text-3xl font-bold mb-2">Clinical Calculators</h1>
@@ -97,7 +81,7 @@
       <div class="calc-card-stripe infectious-disease"></div>
       <div class="p-5 flex flex-col gap-2 flex-1">
         <div class="flex items-start justify-between gap-2">
-          <h2 class="font-bold text-base leading-snug" style="color: var(--rcpch-dark-blue);">
+          <h2 class="font-bold text-base leading-snug" style="color: var(--dark-blue);">
             FeverPAIN<br>Clinical Score
           </h2>
           <span class="tag">Infectious Disease</span>
@@ -108,7 +92,7 @@
         </p>
         <div class="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
           <span class="text-xs text-gray-400">5 items · &lt;1 min</span>
-          <span style="color: var(--rcpch-mid-blue);" class="text-sm font-semibold">Open →</span>
+          <span style="color: var(--mid-blue);" class="text-sm font-semibold">Open →</span>
         </div>
       </div>
     </a>
@@ -118,7 +102,7 @@
       <div class="calc-card-stripe psychiatry"></div>
       <div class="p-5 flex flex-col gap-2 flex-1">
         <div class="flex items-start justify-between gap-2">
-          <h2 class="font-bold text-base leading-snug" style="color: var(--rcpch-dark-blue);">
+          <h2 class="font-bold text-base leading-snug" style="color: var(--dark-blue);">
             ASRS-v1.1<br>ADHD Screener
           </h2>
           <span class="tag">Psychiatry</span>
@@ -129,7 +113,7 @@
         </p>
         <div class="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
           <span class="text-xs text-gray-400">18 questions · ~3 min</span>
-          <span style="color: var(--rcpch-mid-blue);" class="text-sm font-semibold">Open →</span>
+          <span style="color: var(--mid-blue);" class="text-sm font-semibold">Open →</span>
         </div>
       </div>
     </a>
@@ -139,7 +123,7 @@
       <div class="calc-card-stripe anthropometry"></div>
       <div class="p-5 flex flex-col gap-2 flex-1">
         <div class="flex items-start justify-between gap-2">
-          <h2 class="font-bold text-base leading-snug" style="color: var(--rcpch-dark-blue);">
+          <h2 class="font-bold text-base leading-snug" style="color: var(--dark-blue);">
             BMI Calculator
           </h2>
           <span class="tag">Anthropometry</span>
@@ -159,7 +143,7 @@
       <div class="calc-card-stripe endocrinology"></div>
       <div class="p-5 flex flex-col gap-2 flex-1">
         <div class="flex items-start justify-between gap-2">
-          <h2 class="font-bold text-base leading-snug" style="color: var(--rcpch-dark-blue);">
+          <h2 class="font-bold text-base leading-snug" style="color: var(--dark-blue);">
             HbA1c Converter
           </h2>
           <span class="tag">Endocrinology</span>
@@ -178,31 +162,25 @@
 
   <!-- About section -->
   <div class="mt-10 bg-white rounded-xl p-6 shadow-sm text-sm text-gray-600">
-    <h2 class="font-bold mb-2" style="color: var(--rcpch-dark-blue);">About these tools</h2>
+    <h2 class="font-bold mb-2" style="color: var(--dark-blue);">About these tools</h2>
     <p class="mb-2">
       Each calculator is a single, self-contained HTML file with no build step or server required.
       The calculators can be used:
     </p>
     <ul class="list-disc pl-5 space-y-1 mb-3">
-      <li>Directly in a browser — open the file or visit GitHub Pages</li>
+      <li>Directly in a browser — open the file or serve as a static site</li>
       <li>Embedded in <strong>GitEHR</strong> as a Tauri webview window, with results saved as structured patient record entries</li>
       <li>Embedded in any web application via <code class="bg-gray-100 px-1 rounded">&lt;iframe&gt;</code> with <code class="bg-gray-100 px-1 rounded">postMessage</code> result handoff</li>
     </ul>
     <p>
-      The underlying formulae are maintained and tested in the
-      <a href="https://github.com/rcpch/clinical-calculators" target="_blank" rel="noopener"
-         style="color: var(--rcpch-mid-blue);">rcpch/clinical-calculators</a>
-      Python package, which serves as the authoritative source.
+      Scoring logic is implemented in plain JavaScript, validated against the authoritative
+      clinical references in <code class="bg-gray-100 px-1 rounded">clinical-source-references/</code>.
     </p>
   </div>
 </main>
 
 <footer class="text-center text-xs text-gray-400 pb-8">
-  RCPCH Clinical Calculators ·
-  <a href="https://github.com/rcpch/clinical-calculators"
-     target="_blank" rel="noopener"
-     style="color: var(--rcpch-mid-blue);">GitHub</a>
-  · Not a substitute for clinical judgement
+  GitEHR Clinical Calculators · Not a substitute for clinical judgement
 </footer>
 
 </body>
