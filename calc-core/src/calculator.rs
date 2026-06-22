@@ -51,8 +51,8 @@ pub trait Calculator {
 
     /// JSON Schema describing the accepted inputs.
     ///
-    /// Powers `--print-schema` and MCP tool definitions, and lets an LLM work
-    /// out the required inputs without parsing prose help.
+    /// Powers `calc <name> --schema` and MCP tool definitions, and lets an LLM
+    /// work out the required inputs without parsing prose help.
     fn input_schema(&self) -> Value;
 
     /// Compute a result from JSON inputs.
