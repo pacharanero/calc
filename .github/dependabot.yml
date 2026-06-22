@@ -1,0 +1,15 @@
+# Update schedule for GitHub Actions and Rust/Cargo dependencies.
+
+version: 2
+updates:
+  # GitHub Actions, weekly.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Rust/Cargo dependencies, daily.
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "daily"

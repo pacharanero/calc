@@ -17,7 +17,7 @@
 //! derived, so a contradictory age input is impossible.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -27,8 +27,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "padua";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Barbar S, Noventa F, Rossetto V, et al. A risk assessment model for the identification of \
+pub const REFERENCE: &str = "Barbar S, Noventa F, Rossetto V, et al. A risk assessment model for the identification of \
 hospitalized medical patients at risk for venous thromboembolism: the Padua Prediction Score. \
 J Thromb Haemost. 2010;8(11):2450-2457. Threshold and prophylaxis guidance per NICE NG89.";
 
@@ -150,10 +149,22 @@ pub fn build_response(input: &PaduaInput) -> Result<CalculationResponse, CalcErr
 
     let mut working = Map::new();
     working.insert("total_score".into(), json!(o.score));
-    working.insert("active_cancer".into(), json!(3 * u8::from(input.active_cancer)));
-    working.insert("previous_vte".into(), json!(3 * u8::from(input.previous_vte)));
-    working.insert("reduced_mobility".into(), json!(3 * u8::from(input.reduced_mobility)));
-    working.insert("thrombophilia".into(), json!(3 * u8::from(input.thrombophilia)));
+    working.insert(
+        "active_cancer".into(),
+        json!(3 * u8::from(input.active_cancer)),
+    );
+    working.insert(
+        "previous_vte".into(),
+        json!(3 * u8::from(input.previous_vte)),
+    );
+    working.insert(
+        "reduced_mobility".into(),
+        json!(3 * u8::from(input.reduced_mobility)),
+    );
+    working.insert(
+        "thrombophilia".into(),
+        json!(3 * u8::from(input.thrombophilia)),
+    );
     working.insert(
         "recent_trauma_or_surgery".into(),
         json!(2 * u8::from(input.recent_trauma_or_surgery)),
@@ -309,8 +320,8 @@ impl Calculator for Padua {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: PaduaInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: PaduaInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -444,11 +455,13 @@ mod tests {
     fn previous_vte_definition_excludes_superficial() {
         let schema = Padua.input_schema();
         let excludes = &schema["properties"]["previous_vte"]["definition"]["excludes"];
-        assert!(excludes[0]
-            .as_str()
-            .unwrap()
-            .to_lowercase()
-            .contains("superficial"));
+        assert!(
+            excludes[0]
+                .as_str()
+                .unwrap()
+                .to_lowercase()
+                .contains("superficial")
+        );
     }
 
     #[test]

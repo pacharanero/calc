@@ -7,7 +7,7 @@
 //! risk/harmful, 20-40 possible dependence.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -26,8 +26,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Saunders JB, Aasland OG, Babor TF, de la Fuente JR, Grant M. Development of the Alcohol Use \
+pub const REFERENCE: &str = "Saunders JB, Aasland OG, Babor TF, de la Fuente JR, Grant M. Development of the Alcohol Use \
 Disorders Identification Test (AUDIT): WHO Collaborative Project on Early Detection of Persons with \
 Harmful Alcohol Consumption-II. Addiction. 1993;88(6):791-804. doi:10.1111/j.1360-0443.1993.tb02093.x. \
 Scoring/interpretation per Babor TF, Higgins-Biddle JC, Saunders JB, Monteiro MG. AUDIT: Guidelines \
@@ -240,8 +239,8 @@ impl Calculator for Audit {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: AuditInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: AuditInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -251,7 +250,9 @@ mod tests {
     use super::*;
 
     fn responses(v: [u8; 10]) -> AuditInput {
-        AuditInput { responses: v.to_vec() }
+        AuditInput {
+            responses: v.to_vec(),
+        }
     }
 
     #[test]
@@ -292,8 +293,18 @@ mod tests {
 
     #[test]
     fn wrong_length_is_rejected() {
-        assert!(compute(&AuditInput { responses: vec![0; 9] }).is_err());
-        assert!(compute(&AuditInput { responses: vec![0; 11] }).is_err());
+        assert!(
+            compute(&AuditInput {
+                responses: vec![0; 9]
+            })
+            .is_err()
+        );
+        assert!(
+            compute(&AuditInput {
+                responses: vec![0; 11]
+            })
+            .is_err()
+        );
     }
 
     #[test]

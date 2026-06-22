@@ -22,7 +22,7 @@
 //! caveat.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -39,8 +39,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Kamath PS, Wiesner RH, Malinchoc M, et al. A model to predict survival in patients with \
+pub const REFERENCE: &str = "Kamath PS, Wiesner RH, Malinchoc M, et al. A model to predict survival in patients with \
 end-stage liver disease. Hepatology. 2001;33(2):464-470. doi:10.1053/jhep.2001.22172. Bounding \
 rules per UNOS/OPTN policy.";
 
@@ -136,10 +135,8 @@ pub fn compute(input: &MeldInput) -> Result<MeldOutcome, CalcError> {
     }
 
     // 5. Apply the formula.
-    let raw_score = 3.78 * bilirubin_used.ln()
-        + 11.2 * inr_used.ln()
-        + 9.57 * creatinine_used.ln()
-        + 6.43;
+    let raw_score =
+        3.78 * bilirubin_used.ln() + 11.2 * inr_used.ln() + 9.57 * creatinine_used.ln() + 6.43;
 
     // 6. Round to the nearest integer and clamp to 6-40.
     let score = (raw_score.round() as i32).clamp(SCORE_MIN, SCORE_MAX);
@@ -289,8 +286,8 @@ impl Calculator for Meld {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: MeldInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: MeldInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -299,7 +296,14 @@ impl Calculator for Meld {
 mod tests {
     use super::*;
 
-    fn input(bili: f64, bili_unit: Unit, inr: f64, creat: f64, creat_unit: Unit, dialysis: bool) -> MeldInput {
+    fn input(
+        bili: f64,
+        bili_unit: Unit,
+        inr: f64,
+        creat: f64,
+        creat_unit: Unit,
+        dialysis: bool,
+    ) -> MeldInput {
         MeldInput {
             bilirubin: bili,
             bilirubin_unit: bili_unit,

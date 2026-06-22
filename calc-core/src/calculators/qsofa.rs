@@ -18,7 +18,7 @@
 //!   qSOFA as a sole screening tool (preferring NEWS2 or SIRS alongside it).
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -28,8 +28,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "qsofa";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Singer M, Deutschman CS, Seymour CW, et al. The Third International Consensus Definitions for \
+pub const REFERENCE: &str = "Singer M, Deutschman CS, Seymour CW, et al. The Third International Consensus Definitions for \
 Sepsis and Septic Shock (Sepsis-3). JAMA. 2016;315(8):801-810.";
 
 /// Distribution licence: the score is a published clinical method from the
@@ -117,7 +116,11 @@ fn outcome(input: &QsofaInput) -> QsofaOutcome {
         + u8::from(systolic_bp_criterion)
         + u8::from(altered_mentation_criterion);
 
-    let band = if score >= 2 { Band::HighRisk } else { Band::LowRisk };
+    let band = if score >= 2 {
+        Band::HighRisk
+    } else {
+        Band::LowRisk
+    };
 
     let interpretation = match band {
         Band::HighRisk => format!(
@@ -152,10 +155,19 @@ pub fn build_response(input: &QsofaInput) -> Result<CalculationResponse, CalcErr
     working.insert("total_score".into(), json!(o.score));
     working.insert("level".into(), json!(o.band.slug()));
     working.insert("respiratory_rate".into(), json!(input.respiratory_rate));
-    working.insert("respiratory_rate_criterion".into(), json!(o.respiratory_rate_criterion));
+    working.insert(
+        "respiratory_rate_criterion".into(),
+        json!(o.respiratory_rate_criterion),
+    );
     working.insert("systolic_bp".into(), json!(input.systolic_bp));
-    working.insert("systolic_bp_criterion".into(), json!(o.systolic_bp_criterion));
-    working.insert("altered_mentation_criterion".into(), json!(o.altered_mentation_criterion));
+    working.insert(
+        "systolic_bp_criterion".into(),
+        json!(o.systolic_bp_criterion),
+    );
+    working.insert(
+        "altered_mentation_criterion".into(),
+        json!(o.altered_mentation_criterion),
+    );
 
     Ok(CalculationResponse {
         calculator: NAME.to_string(),
@@ -244,8 +256,8 @@ impl Calculator for Qsofa {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: QsofaInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: QsofaInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -387,7 +399,11 @@ mod tests {
 
     #[test]
     fn dynamic_calculate_rejects_garbage() {
-        assert!(Qsofa.calculate(&json!({ "respiratory_rate": "fast" })).is_err());
+        assert!(
+            Qsofa
+                .calculate(&json!({ "respiratory_rate": "fast" }))
+                .is_err()
+        );
     }
 
     #[test]

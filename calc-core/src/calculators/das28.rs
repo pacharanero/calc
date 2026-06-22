@@ -13,7 +13,7 @@
 //! low (2.6 to <3.2), moderate (3.2 to 5.1), high (>5.1).
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -30,8 +30,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Prevoo MLL, van 't Hof MA, Kuper HH, et al. Modified disease activity scores that include \
+pub const REFERENCE: &str = "Prevoo MLL, van 't Hof MA, Kuper HH, et al. Modified disease activity scores that include \
 twenty-eight-joint counts: development and validation in a prospective longitudinal study of \
 patients with rheumatoid arthritis. Arthritis Rheum. 1995;38(1):44-48. \
 doi:10.1002/art.1780380107";
@@ -311,8 +310,8 @@ impl Calculator for Das28 {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: Das28Input =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: Das28Input = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }

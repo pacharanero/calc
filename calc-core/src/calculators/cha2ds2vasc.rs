@@ -14,7 +14,7 @@
 //!   anticoagulation (NICE NG196).
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -24,8 +24,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "cha2ds2vasc";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Lip GYH, Nieuwlaat R, Pisters R, et al. Refining clinical risk stratification for predicting \
+pub const REFERENCE: &str = "Lip GYH, Nieuwlaat R, Pisters R, et al. Refining clinical risk stratification for predicting \
 stroke and thromboembolism in atrial fibrillation using a novel risk factor-based approach: the \
 Euro Heart Survey on Atrial Fibrillation. Chest. 2010;137(2):263-272. Thresholds per NICE NG196.";
 
@@ -166,12 +165,24 @@ pub fn build_response(input: &Cha2ds2VascInput) -> Result<CalculationResponse, C
     let mut working = Map::new();
     working.insert("total_score".into(), json!(o.score));
     working.insert("age_points".into(), json!(o.age_points));
-    working.insert("congestive_heart_failure".into(), json!(u8::from(input.congestive_heart_failure)));
+    working.insert(
+        "congestive_heart_failure".into(),
+        json!(u8::from(input.congestive_heart_failure)),
+    );
     working.insert("hypertension".into(), json!(u8::from(input.hypertension)));
     working.insert("diabetes".into(), json!(u8::from(input.diabetes)));
-    working.insert("stroke_tia_thromboembolism".into(), json!(2 * u8::from(input.stroke_tia_thromboembolism)));
-    working.insert("vascular_disease".into(), json!(u8::from(input.vascular_disease)));
-    working.insert("sex_point".into(), json!(u8::from(input.sex == Sex::Female)));
+    working.insert(
+        "stroke_tia_thromboembolism".into(),
+        json!(2 * u8::from(input.stroke_tia_thromboembolism)),
+    );
+    working.insert(
+        "vascular_disease".into(),
+        json!(u8::from(input.vascular_disease)),
+    );
+    working.insert(
+        "sex_point".into(),
+        json!(u8::from(input.sex == Sex::Female)),
+    );
     working.insert("recommendation".into(), json!(o.recommendation.slug()));
 
     Ok(CalculationResponse {
@@ -310,8 +321,8 @@ impl Calculator for Cha2ds2Vasc {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: Cha2ds2VascInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: Cha2ds2VascInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -429,10 +440,18 @@ mod tests {
     fn vascular_definition_excludes_vte() {
         let schema = Cha2ds2Vasc.input_schema();
         let excludes = &schema["properties"]["vascular_disease"]["definition"]["excludes"];
-        assert!(excludes[0].as_str().unwrap().contains("Venous thromboembolism"));
+        assert!(
+            excludes[0]
+                .as_str()
+                .unwrap()
+                .contains("Venous thromboembolism")
+        );
         let ecl = schema["properties"]["vascular_disease"]["definition"]["snomedEcl"]
             .as_str()
             .unwrap();
-        assert!(ecl.contains("MINUS"), "vascular ECL must exclude the venous hierarchy");
+        assert!(
+            ecl.contains("MINUS"),
+            "vascular ECL must exclude the venous hierarchy"
+        );
     }
 }

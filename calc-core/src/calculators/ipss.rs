@@ -13,7 +13,7 @@
 //! licensed questionnaire text.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -135,7 +135,8 @@ pub fn compute(input: &IpssInput) -> Result<IpssOutcome, CalcError> {
 reported separately and is not part of the 0-35 symptom score."
         ));
     }
-    interpretation.push_str(" IPSS grades symptom severity to guide management; it is not a diagnosis.");
+    interpretation
+        .push_str(" IPSS grades symptom severity to guide management; it is not a diagnosis.");
 
     Ok(IpssOutcome {
         total,
@@ -236,8 +237,8 @@ bands mild 0-7, moderate 8-19, severe 20-35, with an optional quality-of-life it
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: IpssInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: IpssInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -247,7 +248,10 @@ mod tests {
     use super::*;
 
     fn responses(v: [u8; 7]) -> IpssInput {
-        IpssInput { responses: v.to_vec(), quality_of_life: None }
+        IpssInput {
+            responses: v.to_vec(),
+            quality_of_life: None,
+        }
     }
 
     #[test]
@@ -287,7 +291,10 @@ mod tests {
 
     #[test]
     fn quality_of_life_is_reported_not_scored() {
-        let input = IpssInput { responses: vec![1; 7], quality_of_life: Some(6) };
+        let input = IpssInput {
+            responses: vec![1; 7],
+            quality_of_life: Some(6),
+        };
         let o = compute(&input).unwrap();
         // Total is unchanged by the QoL item (7 symptom points only).
         assert_eq!(o.total, 7);
@@ -311,14 +318,35 @@ mod tests {
 
     #[test]
     fn wrong_length_and_range_are_rejected() {
-        assert!(compute(&IpssInput { responses: vec![0; 6], quality_of_life: None }).is_err());
-        assert!(compute(&IpssInput { responses: vec![0; 8], quality_of_life: None }).is_err());
-        assert!(compute(&IpssInput { responses: vec![6, 0, 0, 0, 0, 0, 0], quality_of_life: None }).is_err());
+        assert!(
+            compute(&IpssInput {
+                responses: vec![0; 6],
+                quality_of_life: None
+            })
+            .is_err()
+        );
+        assert!(
+            compute(&IpssInput {
+                responses: vec![0; 8],
+                quality_of_life: None
+            })
+            .is_err()
+        );
+        assert!(
+            compute(&IpssInput {
+                responses: vec![6, 0, 0, 0, 0, 0, 0],
+                quality_of_life: None
+            })
+            .is_err()
+        );
     }
 
     #[test]
     fn out_of_range_quality_of_life_is_rejected() {
-        let input = IpssInput { responses: vec![0; 7], quality_of_life: Some(7) };
+        let input = IpssInput {
+            responses: vec![0; 7],
+            quality_of_life: Some(7),
+        };
         assert!(compute(&input).is_err());
     }
 

@@ -1,41 +1,93 @@
-> [!IMPORTANT]
-> **This repository has moved and is no longer maintained here.**
->
-> The clinical calculators are now developed inside the main **GitEHR** repository: <https://github.com/gitehr/gitehr>
->
-> They are built on a shared Rust engine (`calc-core`) that drives every surface from one source of truth - the CLI (`calc` / `gitehr calc`), the MCP server, the GitEHR desktop GUI, and the single-file web calculators. In the GitEHR repo:
->
-> - Engine and result schema: `calc-core/`
-> - CLI (standalone `calc` binary + reused by `gitehr calc`): `calc-cli/`
-> - Single-file web calculators and the shared bridge: `calc-web/`
-> - Specification and roadmap: `spec/calculators.md`, `spec/calculator-roadmap.md`
->
-> Please direct all new work, issues, and contributions there. The contents below are retained for historical reference only.
+# GitEHR Clinical Calculators
 
----
+Open, auditable clinical calculators driven by a single Rust engine. One scoring core (`calc-core`) powers every surface - the `calc` command line, an MCP server for LLMs, the GitEHR desktop GUI, and single-file web tools - so a result is identical wherever it is produced.
 
-# Clippable Clinical Calculators
+This is the home of the calculators that GitEHR uses; they live here so the engine, the web tools, and the docs can focus on calculators and so the `calc` CLI can be installed and used on its own, with no EHR.
 
-Clinicians need access to clinical digital tools to provide good care. Yet the commercial incentives to add these calculators to EHRs are weak, and the technical and compliance barriers to building them are high. The result is a patchwork of calculators scattered across the web, often behind paywalls, and frequently implemented in ways that are difficult to use at the point of care.
+## Why
 
-This repository contains a collection of **standalone single-file clinical calculators** that are:
+Clinicians need clinical digital tools to provide good care, but the incentives to build them into EHRs are weak and the compliance barriers are high. The result is a patchwork of calculators scattered across the web, often behind paywalls or implemented inconsistently. This project makes them **open source, free to use, evidence-based, and auditable** - each cites primary literature, is tested against published vectors, and records the licence it is distributed under.
 
-- **Open source** — anyone can view, use, modify, and share the code
-- **Free to use** — no paywalls, no licenses, no restrictions
-- **Easy to deploy** — each calculator is a single HTML file that can be opened directly
-- **Context-aware** — they can detect if they're running inside a compatible EHR and dispatch results accordingly
-- **Clippable** — results can be easily copied to the clipboard for use in other applications
+### Soft interoperability
 
-### Soft Interoperability
+"Soft" interoperability is copy-and-paste interop: it lets clinicians use the tools they want without being constrained by their EHR. Copy-and-paste is derided as a kludge, but it is what clinicians actually use, so every calculator produces a clean, editable text summary as a first-class output - while also dispatching structured results when embedded in a host.
 
-'Soft' Interoperability is my term for this idea of 'copy and paste' interop. It empowers clinicians to use the tools they want to use, without being constrained by the limitations of their EHR, and enables clinicians to use their own decision-making capacity to determine if they want to use one of these calculators or not.
+## Install and use the `calc` CLI
 
-Copy and paste, despite being a common clinician workaround for the myriad deficiencies of EHRs, is often derided as a 'hack' or 'kludge' by software developers. We would all prefer the *real* kind of interoperability, where data flows seamlessly between systems without manual intervention. Until we get there, we need to embrace and optimise for the tools that clinicians are *actually* using, even if they're not perfect.
+```bash
+cargo install --git https://github.com/gitehr/tools calc-cli
+```
 
-## Specification
+There are no per-calculator flags. Every calculator is driven the same way - ask for a template, fill it in, pass it back:
 
-see [spec.md](spec.md) for the technical specification of how these calculators are built and how they work.
+```bash
+calc list                       # list calculators (add --format json for licences)
+calc <name>                     # print a fillable input TEMPLATE (JSON)
+calc <name> --schema            # the JSON Schema (full input contract)
+calc <name> --license           # the algorithm's distribution licence + evidence URL
+calc <name> --input -           # compute, reading JSON from stdin
+calc <name> --input data.json   # ...or from a file
+calc <name> --input '{...}'     # ...or inline
+```
 
-## Skill
+```console
+$ calc curb65 --input '{"confusion":false,"urea_mmol_l":8,"respiratory_rate":32,"systolic_bp":85,"diastolic_bp":55,"age":72}'
+curb65 = 4
+High severity ... consider hospital admission and assessment for intensive care.
+```
 
-see
+The template printed by `calc <name>` has the same shape as the input it expects, so it is a clean round-trip. Output, schema, and template are JSON on stdout; hints go to stderr.
+
+## The library
+
+The full UK-focused 50-tool roadmap (`spec/calculator-roadmap.md`) is implemented across five tiers, from QRISK3, PHQ-9, GAD-7, eGFR and FIB-4 through NEWS2, CURB-65, the Wells scores, CHA2DS2-VASc and HAS-BLED, to DAS28, SOFA, MELD, CHALICE and Gleason. Run `calc list` for the current set.
+
+### Proprietary tools are named, not hidden
+
+A handful of tools cannot be shipped because they are proprietary or licence-locked (FRAX, MMSE, ELF, ACQ, the Oxford Hip/Knee Scores, CAT, MUST, CFS, LANSS). Rather than omit them silently, each is registered as a calculator that returns a structured explanation - the owner, why it cannot be shipped, open alternatives (often one shipped here), and how to advocate for open clinical tools:
+
+```console
+$ calc frax --input '{}'
+frax = unavailable: proprietary
+FRAX ... is not available because it is proprietary or licence-locked. Owner:
+University of Sheffield ... Open alternatives: qfracture ...
+```
+
+## Architecture: one core, many surfaces
+
+The dependency arrows all point **into** the core, which never depends on anything above it:
+
+- **`calc-core`** - the pure scoring engine and result schema. A strict leaf crate: depends only on `serde` and `serde_json`, never on an async runtime or any host. This is what makes the calculators detachable and embeddable.
+- **`calc-cli`** - the `calc` binary plus a reusable library (`calc_cli::run`). GitEHR's `gitehr calc` subcommand calls this same library, so nothing is reimplemented.
+- **`calc-web`** - single-file HTML calculators with a shared context-detection bridge.
+
+Adding a calculator to `calc_core::all()` surfaces it everywhere - CLI, MCP, web - with no per-surface code.
+
+### Input definitions
+
+Several inputs are clinician-asserted predicates whose TRUE/FALSE conditions are easy to get subtly wrong (for example, "vascular disease" in CHA2DS2-VASc is arterial and excludes venous thromboembolism). Each such input carries a machine-readable definition - includes, excludes, a cited source, and a draft SNOMED ECL - that travels in the schema to every surface. See `spec/calculator-input-definitions.md`.
+
+## Embedding in GitEHR
+
+GitEHR ([gitehr/gitehr](https://github.com/gitehr/gitehr)) consumes these crates: its CLI forwards `gitehr calc` to `calc_cli::run`, and its MCP server exposes each calculator from `calc_core::all()` as a `calc_<name>` tool whose input schema is the calculator's own JSON Schema. The calculators are the engine; GitEHR wires them into its EHR-specific surfaces.
+
+## Develop
+
+```bash
+cargo test                                      # all calculators
+cargo clippy --all-targets -- -D warnings
+cargo fmt --all --check
+```
+
+CI enforces all three. Adding a calculator: implement it in `calc-core` (typed input, pure `compute`, `build_response`, a `Calculator` impl with `input_schema()` and `license()`, and literature-vector tests), register it in `all()`, and that is the only Rust work - the CLI and MCP surfaces pick it up automatically. See `spec/calculators.md` and `skills/build-calculator/`.
+
+## Licensing
+
+- `calc-core` / `calc-cli`: AGPL-3.0-or-later. This work is deliberately not available for subsumption into proprietary EHRs; if that service needs to exist, it can be offered as a hosted Calc-API.
+- Clinical algorithms are implemented from primary literature (most scores are public-domain methods); QRISK3 and QFracture are ported from ClinRisk's LGPL-3.0 source and carry the required disclaimer. Each calculator records its own distribution licence via `calc <name> --license`.
+- Clinical content (source references) under CC-BY-SA-4.0.
+
+## Roadmap
+
+- Publish `calc-core` and `calc-cli` to crates.io once a distribution pipeline is established, so `cargo install calc-cli` works without `--git`.
+- A focused documentation site for the calculators.

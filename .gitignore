@@ -1,1 +1,24 @@
+### Rust
+
+# Build artifacts
+/target/
+**/*.rs.bk
+
+# Debug files
+**/*.pdb
+
+# NOTE: Cargo.lock IS committed. This repo produces a distributed binary
+# (`calc`), so a locked dependency set gives reproducible installs.
+
+### Editors / OS
+
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+### Local agent / session files
+
 .claude/
+.marcus/

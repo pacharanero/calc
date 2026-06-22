@@ -11,7 +11,7 @@
 //! to mg/mmol plus the KDIGO albuminuria category (A1/A2/A3).
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -30,8 +30,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Kidney Disease: Improving Global Outcomes (KDIGO) CKD Work Group. KDIGO 2024 Clinical \
+pub const REFERENCE: &str = "Kidney Disease: Improving Global Outcomes (KDIGO) CKD Work Group. KDIGO 2024 Clinical \
 Practice Guideline for the Evaluation and Management of Chronic Kidney Disease. Kidney Int. \
 2024;105(4S):S117-S314. doi:10.1016/j.kint.2023.10.018";
 
@@ -318,8 +317,8 @@ impl Calculator for Uacr {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: UacrInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: UacrInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }

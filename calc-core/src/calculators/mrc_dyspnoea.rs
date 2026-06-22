@@ -13,7 +13,7 @@
 //! calculator takes the classic 1-5 grade.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -31,8 +31,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Fletcher CM, Elmes PC, Fairbairn AS, Wood CH. The significance of respiratory symptoms and \
+pub const REFERENCE: &str = "Fletcher CM, Elmes PC, Fairbairn AS, Wood CH. The significance of respiratory symptoms and \
 the diagnosis of chronic bronchitis in a working population. Br Med J. 1959;2(5147):257-266. \
 doi:10.1136/bmj.2.5147.257";
 
@@ -54,7 +53,9 @@ fn descriptor(grade: u8) -> &'static str {
     match grade {
         1 => "Not troubled by breathlessness except on strenuous exercise",
         2 => "Short of breath when hurrying on the level or walking up a slight hill",
-        3 => "Walks slower than contemporaries on the level because of breathlessness, or has to stop for breath when walking at own pace",
+        3 => {
+            "Walks slower than contemporaries on the level because of breathlessness, or has to stop for breath when walking at own pace"
+        }
         4 => "Stops for breath after walking about 100 metres or after a few minutes on the level",
         5 => "Too breathless to leave the house, or breathless when dressing or undressing",
         _ => unreachable!("grade is validated to 1-5 before this is called"),
@@ -170,8 +171,8 @@ impl Calculator for MrcDyspnoea {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: MrcDyspnoeaInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: MrcDyspnoeaInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }

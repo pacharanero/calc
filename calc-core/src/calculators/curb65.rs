@@ -18,7 +18,7 @@
 //! bloods are unavailable; it is not computed by this calculator.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -28,8 +28,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "curb65";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Lim WS, van der Eerden MM, Laing R, et al. Defining community acquired pneumonia severity on \
+pub const REFERENCE: &str = "Lim WS, van der Eerden MM, Laing R, et al. Defining community acquired pneumonia severity on \
 presentation to hospital: an international derivation and validation study. Thorax. \
 2003;58(5):377-382. Management thresholds per BTS / NICE NG138.";
 
@@ -192,8 +191,14 @@ pub fn build_response(input: &Curb65Input) -> Result<CalculationResponse, CalcEr
     working.insert("total_score".into(), json!(o.score));
     working.insert("confusion".into(), json!(u8::from(o.confusion)));
     working.insert("urea_gt_7_mmol_l".into(), json!(u8::from(o.urea)));
-    working.insert("respiratory_rate_ge_30".into(), json!(u8::from(o.respiratory_rate)));
-    working.insert("low_blood_pressure".into(), json!(u8::from(o.blood_pressure)));
+    working.insert(
+        "respiratory_rate_ge_30".into(),
+        json!(u8::from(o.respiratory_rate)),
+    );
+    working.insert(
+        "low_blood_pressure".into(),
+        json!(u8::from(o.blood_pressure)),
+    );
     working.insert("age_ge_65".into(), json!(u8::from(o.age)));
     working.insert("risk_band".into(), json!(o.risk_band.slug()));
 
@@ -310,8 +315,8 @@ impl Calculator for Curb65 {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: Curb65Input =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: Curb65Input = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }

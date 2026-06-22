@@ -14,7 +14,7 @@
 //! validated sex-specific thresholds.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -34,8 +34,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Bush K, Kivlahan DR, McDonell MB, Fihn SD, Bradley KA. The AUDIT alcohol consumption \
+pub const REFERENCE: &str = "Bush K, Kivlahan DR, McDonell MB, Fihn SD, Bradley KA. The AUDIT alcohol consumption \
 questions (AUDIT-C): an effective brief screening test for problem drinking. Arch Intern Med. \
 1998;158(16):1789-1795. doi:10.1001/archinte.158.16.1789";
 
@@ -384,21 +383,27 @@ mod tests {
 
     #[test]
     fn wrong_length_and_range_are_rejected() {
-        assert!(compute(&AuditCInput {
-            responses: vec![0; 2],
-            sex: Sex::Male
-        })
-        .is_err());
-        assert!(compute(&AuditCInput {
-            responses: vec![0; 4],
-            sex: Sex::Male
-        })
-        .is_err());
-        assert!(compute(&AuditCInput {
-            responses: vec![5, 0, 0],
-            sex: Sex::Female
-        })
-        .is_err());
+        assert!(
+            compute(&AuditCInput {
+                responses: vec![0; 2],
+                sex: Sex::Male
+            })
+            .is_err()
+        );
+        assert!(
+            compute(&AuditCInput {
+                responses: vec![0; 4],
+                sex: Sex::Male
+            })
+            .is_err()
+        );
+        assert!(
+            compute(&AuditCInput {
+                responses: vec![5, 0, 0],
+                sex: Sex::Female
+            })
+            .is_err()
+        );
     }
 
     #[test]

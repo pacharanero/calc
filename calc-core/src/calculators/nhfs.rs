@@ -17,7 +17,7 @@
 //!   ten-fold error.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -27,8 +27,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "nhfs";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Maxwell MJ, Moran CG, Moppett IK. Development and validation of a preoperative scoring system \
+pub const REFERENCE: &str = "Maxwell MJ, Moran CG, Moppett IK. Development and validation of a preoperative scoring system \
 to predict 30 day mortality in patients undergoing hip fracture surgery. Br J Anaesth. \
 2008;101(4):511-517. doi:10.1093/bja/aen236";
 
@@ -177,13 +176,19 @@ pub fn build_response(input: &NhfsInput) -> Result<CalculationResponse, CalcErro
         "amts_impaired".into(),
         json!(u8::from(input.amts <= AMTS_THRESHOLD)),
     );
-    working.insert("institutionalised".into(), json!(u8::from(input.institutionalised)));
+    working.insert(
+        "institutionalised".into(),
+        json!(u8::from(input.institutionalised)),
+    );
     working.insert(
         "comorbidities_two_or_more".into(),
         json!(u8::from(input.comorbidities_two_or_more)),
     );
     working.insert("malignancy".into(), json!(u8::from(input.malignancy)));
-    working.insert("predicted_30day_mortality_pct".into(), json!(o.mortality_pct));
+    working.insert(
+        "predicted_30day_mortality_pct".into(),
+        json!(o.mortality_pct),
+    );
 
     Ok(CalculationResponse {
         calculator: NAME.to_string(),
@@ -319,8 +324,8 @@ impl Calculator for Nhfs {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: NhfsInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: NhfsInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -442,23 +447,25 @@ mod tests {
 
     #[test]
     fn unknown_fields_are_rejected() {
-        assert!(Nhfs
-            .calculate(&json!({
+        assert!(
+            Nhfs.calculate(&json!({
                 "age": 70, "male": true, "haemoglobin": 12.0, "amts": 8,
                 "institutionalised": false, "comorbidities_two_or_more": false,
                 "malignancy": false, "extra": true
             }))
-            .is_err());
+            .is_err()
+        );
     }
 
     #[test]
     fn missing_fields_are_rejected() {
-        assert!(Nhfs
-            .calculate(&json!({
+        assert!(
+            Nhfs.calculate(&json!({
                 "age": 70, "male": true, "haemoglobin": 12.0, "amts": 8,
                 "institutionalised": false, "comorbidities_two_or_more": false
             }))
-            .is_err());
+            .is_err()
+        );
     }
 
     #[test]
@@ -467,7 +474,10 @@ mod tests {
         let caveats = schema["properties"]["haemoglobin"]["definition"]["caveats"]
             .as_str()
             .unwrap();
-        assert!(caveats.contains("g/L"), "haemoglobin definition must flag the g/L unit pitfall");
+        assert!(
+            caveats.contains("g/L"),
+            "haemoglobin definition must flag the g/L unit pitfall"
+        );
     }
 
     #[test]
@@ -490,6 +500,9 @@ mod tests {
         let dynamic = Nhfs.calculate(&value).unwrap();
         assert_eq!(dynamic, build_response(&typed).unwrap());
         assert_eq!(dynamic.result, json!(7));
-        assert_eq!(dynamic.working["predicted_30day_mortality_pct"], json!(16.0));
+        assert_eq!(
+            dynamic.working["predicted_30day_mortality_pct"],
+            json!(16.0)
+        );
     }
 }

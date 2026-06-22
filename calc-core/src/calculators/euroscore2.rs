@@ -24,7 +24,7 @@
 //! baseline, which the unit tests pin.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -34,8 +34,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "euroscore2";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Nashef SAM, Roques F, Sharples LD, et al. EuroSCORE II. Eur J Cardiothorac Surg. \
+pub const REFERENCE: &str = "Nashef SAM, Roques F, Sharples LD, et al. EuroSCORE II. Eur J Cardiothorac Surg. \
 2012;41(4):734-744. doi:10.1093/ejcts/ezs043. Coefficients from Table 6 (multivariable model).";
 
 /// Distribution licence: EuroSCORE II is published as a free clinical tool by its
@@ -388,7 +387,10 @@ pub fn build_response(input: &EuroScore2Input) -> Result<CalculationResponse, Ca
     working.insert("constant".into(), json!(CONST));
     working.insert("age_step".into(), json!(o.age_step));
     working.insert("linear_predictor".into(), json!(o.linear_predictor));
-    working.insert("predicted_mortality_percent".into(), json!(o.mortality_percent));
+    working.insert(
+        "predicted_mortality_percent".into(),
+        json!(o.mortality_percent),
+    );
 
     Ok(CalculationResponse {
         calculator: NAME.to_string(),
@@ -623,8 +625,8 @@ impl Calculator for EuroScore2 {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: EuroScore2Input =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: EuroScore2Input = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -774,7 +776,11 @@ mod tests {
 
         assert!(high.mortality_percent > low.mortality_percent);
         assert!(high.mortality_percent < 100.0);
-        assert!(high.mortality_percent > 50.0, "got {}", high.mortality_percent);
+        assert!(
+            high.mortality_percent > 50.0,
+            "got {}",
+            high.mortality_percent
+        );
     }
 
     #[test]
@@ -846,7 +852,10 @@ mod tests {
                 schema["properties"][var]["definition"].is_object(),
                 "{var} must carry a definition"
             );
-            assert!(schema["properties"][var]["enum"].is_array(), "{var} must enumerate its bands");
+            assert!(
+                schema["properties"][var]["enum"].is_array(),
+                "{var} must enumerate its bands"
+            );
         }
     }
 }

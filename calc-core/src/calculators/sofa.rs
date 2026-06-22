@@ -22,7 +22,7 @@
 //!   which keeps the contract tractable and unambiguous.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -32,8 +32,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "sofa";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Vincent JL, Moreno R, Takala J, et al. The SOFA (Sepsis-related Organ Failure Assessment) \
+pub const REFERENCE: &str = "Vincent JL, Moreno R, Takala J, et al. The SOFA (Sepsis-related Organ Failure Assessment) \
 score to describe organ dysfunction/failure. Intensive Care Med. 1996;22(7):707-710. \
 doi:10.1007/BF01709751. Sepsis-3: Singer M, et al. JAMA. 2016;315(8):801-810.";
 
@@ -149,18 +148,10 @@ fn respiration_score(pao2_fio2: f64, respiratory_support: bool) -> u8 {
         2
     } else if pao2_fio2 >= 100.0 {
         // < 200: needs support to score 3, else capped at 2.
-        if respiratory_support {
-            3
-        } else {
-            2
-        }
+        if respiratory_support { 3 } else { 2 }
     } else {
         // < 100: needs support to score 4, else capped at 2.
-        if respiratory_support {
-            4
-        } else {
-            2
-        }
+        if respiratory_support { 4 } else { 2 }
     }
 }
 
@@ -443,8 +434,8 @@ impl Calculator for Sofa {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: SofaInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: SofaInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -531,8 +522,16 @@ mod tests {
         assert_eq!(respiration_score(300.0, false), 1);
         assert_eq!(respiration_score(299.0, false), 2);
         assert_eq!(respiration_score(200.0, false), 2);
-        assert_eq!(respiration_score(199.0, false), 2, "<200 without support caps at 2");
-        assert_eq!(respiration_score(99.0, false), 2, "<100 without support caps at 2");
+        assert_eq!(
+            respiration_score(199.0, false),
+            2,
+            "<200 without support caps at 2"
+        );
+        assert_eq!(
+            respiration_score(99.0, false),
+            2,
+            "<100 without support caps at 2"
+        );
         // With support, the 3/4 rows apply.
         assert_eq!(respiration_score(199.0, true), 3);
         assert_eq!(respiration_score(100.0, true), 3);
@@ -617,7 +616,10 @@ mod tests {
         b.bilirubin = 7.0 * BILIRUBIN_UMOL_PER_MGDL;
         b.bilirubin_unit = BilirubinUnit::UmolL;
         assert_eq!(compute(&a).unwrap().liver_score, 3);
-        assert_eq!(compute(&a).unwrap().liver_score, compute(&b).unwrap().liver_score);
+        assert_eq!(
+            compute(&a).unwrap().liver_score,
+            compute(&b).unwrap().liver_score
+        );
     }
 
     #[test]
@@ -630,7 +632,10 @@ mod tests {
         b.creatinine = 4.0 * CREATININE_UMOL_PER_MGDL;
         b.creatinine_unit = CreatinineUnit::UmolL;
         assert_eq!(compute(&a).unwrap().renal_score, 3);
-        assert_eq!(compute(&a).unwrap().renal_score, compute(&b).unwrap().renal_score);
+        assert_eq!(
+            compute(&a).unwrap().renal_score,
+            compute(&b).unwrap().renal_score
+        );
     }
 
     #[test]

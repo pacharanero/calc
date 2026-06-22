@@ -6,7 +6,7 @@
 //! (`calc-web/calculators/adhd-questionnaire-asrs111.html`).
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -57,11 +57,7 @@ pub struct AsrsOutcome {
 /// Part A item threshold: items 1–3 (index 0–2) positive at ≥ 2 (Sometimes),
 /// items 4–6 (index 3–5) positive at ≥ 3 (Often).
 fn part_a_item_positive(index: usize, score: u8) -> bool {
-    if index < 3 {
-        score >= 2
-    } else {
-        score >= 3
-    }
+    if index < 3 { score >= 2 } else { score >= 3 }
 }
 
 fn interpret(part_a_positive: u8) -> String {
@@ -102,8 +98,7 @@ pub fn compute(input: &AsrsInput) -> Result<AsrsOutcome, CalcError> {
     let mut part_a_item_positive_arr = [false; 6];
     let mut part_a_positive = 0u8;
     let mut part_a_total = 0u16;
-    for i in 0..6 {
-        let v = input.responses[i];
+    for (i, &v) in input.responses.iter().take(6).enumerate() {
         part_a_total += v as u16;
         let pos = part_a_item_positive(i, v);
         part_a_item_positive_arr[i] = pos;
@@ -112,7 +107,10 @@ pub fn compute(input: &AsrsInput) -> Result<AsrsOutcome, CalcError> {
         }
     }
 
-    let part_b_total: u16 = input.responses[6..ITEM_COUNT].iter().map(|&v| v as u16).sum();
+    let part_b_total: u16 = input.responses[6..ITEM_COUNT]
+        .iter()
+        .map(|&v| v as u16)
+        .sum();
     let total = part_a_total + part_b_total;
     let screen_positive = part_a_positive >= 4;
 
@@ -134,9 +132,16 @@ pub fn build_response(input: &AsrsInput) -> Result<CalculationResponse, CalcErro
     let mut working = Map::new();
     working.insert(
         "part_a_screen_result".into(),
-        json!(if o.screen_positive { "POSITIVE" } else { "NEGATIVE" }),
+        json!(if o.screen_positive {
+            "POSITIVE"
+        } else {
+            "NEGATIVE"
+        }),
     );
-    working.insert("part_a_positive_item_count".into(), json!(o.part_a_positive));
+    working.insert(
+        "part_a_positive_item_count".into(),
+        json!(o.part_a_positive),
+    );
     working.insert("part_a_total_score".into(), json!(o.part_a_total));
     working.insert("part_b_total_score".into(), json!(o.part_b_total));
     working.insert("total_score".into(), json!(o.total));
@@ -195,8 +200,8 @@ impl Calculator for Asrs {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: AsrsInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: AsrsInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -206,7 +211,9 @@ mod tests {
     use super::*;
 
     fn responses(v: [u8; 18]) -> AsrsInput {
-        AsrsInput { responses: v.to_vec() }
+        AsrsInput {
+            responses: v.to_vec(),
+        }
     }
 
     #[test]
@@ -256,8 +263,18 @@ mod tests {
 
     #[test]
     fn wrong_length_is_rejected() {
-        assert!(compute(&AsrsInput { responses: vec![0; 17] }).is_err());
-        assert!(compute(&AsrsInput { responses: vec![0; 19] }).is_err());
+        assert!(
+            compute(&AsrsInput {
+                responses: vec![0; 17]
+            })
+            .is_err()
+        );
+        assert!(
+            compute(&AsrsInput {
+                responses: vec![0; 19]
+            })
+            .is_err()
+        );
     }
 
     #[test]

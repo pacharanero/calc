@@ -15,7 +15,7 @@
 //!   be established, so the interpretation says so explicitly.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -25,8 +25,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "fourat";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "MacLullich AMJ, Ryan T, Cash H. 4AT: Rapid Clinical Test for Delirium Detection. Version 1.1, \
+pub const REFERENCE: &str = "MacLullich AMJ, Ryan T, Cash H. 4AT: Rapid Clinical Test for Delirium Detection. Version 1.1, \
 May 2014. Validated in Bellelli G, et al. Age Ageing. 2014;43(4):496-502, and Shenkin SD, et al. \
 BMC Med. 2019;17:138. https://www.the4at.com";
 
@@ -208,7 +207,10 @@ pub fn build_response(input: &FourAtInput) -> Result<CalculationResponse, CalcEr
     working.insert("alertness".into(), json!(input.alertness.points()));
     working.insert("amt4".into(), json!(input.amt4.points()));
     working.insert("attention".into(), json!(input.attention.points()));
-    working.insert("acute_change".into(), json!(4 * u8::from(input.acute_change)));
+    working.insert(
+        "acute_change".into(),
+        json!(4 * u8::from(input.acute_change)),
+    );
     working.insert("band".into(), json!(o.band.slug()));
 
     Ok(CalculationResponse {
@@ -305,8 +307,8 @@ impl Calculator for FourAt {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: FourAtInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: FourAtInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }

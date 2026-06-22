@@ -17,7 +17,7 @@
 //! (<45 = 0, 45-64 = 1, >=65 = 2), so contradictory age inputs are impossible.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -27,8 +27,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "heart";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Six AJ, Backus BE, Kelder JC. Chest pain in the emergency room: value of the HEART score. \
+pub const REFERENCE: &str = "Six AJ, Backus BE, Kelder JC. Chest pain in the emergency room: value of the HEART score. \
 Neth Heart J. 2008;16(6):191-196. Validated in Backus BE, Six AJ, Kelder JC, et al. A prospective \
 validation of the HEART score for chest pain patients at the emergency department. Int J Cardiol. \
 2013;168(3):2153-2158.";
@@ -338,8 +337,8 @@ versus early invasive management (Six AJ et al. 2008)."
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: HeartInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: HeartInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -485,7 +484,13 @@ mod tests {
     fn risk_factor_definition_notes_atherosclerosis_autoscores() {
         let schema = Heart.input_schema();
         let includes = &schema["properties"]["risk_factors"]["definition"]["includes"];
-        let last = includes.as_array().unwrap().last().unwrap().as_str().unwrap();
+        let last = includes
+            .as_array()
+            .unwrap()
+            .last()
+            .unwrap()
+            .as_str()
+            .unwrap();
         assert!(last.contains("atherosclerotic disease"));
         assert!(last.contains("auto-scores 2"));
     }

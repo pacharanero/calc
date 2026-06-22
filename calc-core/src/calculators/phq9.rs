@@ -10,7 +10,7 @@
 //! here.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -28,8 +28,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Kroenke K, Spitzer RL, Williams JBW. The PHQ-9: validity of a brief depression \
+pub const REFERENCE: &str = "Kroenke K, Spitzer RL, Williams JBW. The PHQ-9: validity of a brief depression \
 severity measure. J Gen Intern Med. 2001;16(9):606-613. doi:10.1046/j.1525-1497.2001.016009606.x";
 
 /// Number of scored items.
@@ -131,7 +130,8 @@ pub fn compute(input: &Phq9Input) -> Result<Phq9Outcome, CalcError> {
 indicated regardless of the total score.",
         );
     }
-    interpretation.push_str(" PHQ-9 supports severity grading and monitoring; it is not a diagnosis.");
+    interpretation
+        .push_str(" PHQ-9 supports severity grading and monitoring; it is not a diagnosis.");
 
     Ok(Phq9Outcome {
         total,
@@ -228,8 +228,8 @@ impl Calculator for Phq9 {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: Phq9Input =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: Phq9Input = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -239,7 +239,9 @@ mod tests {
     use super::*;
 
     fn responses(v: [u8; 9]) -> Phq9Input {
-        Phq9Input { responses: v.to_vec() }
+        Phq9Input {
+            responses: v.to_vec(),
+        }
     }
 
     #[test]
@@ -283,9 +285,24 @@ mod tests {
 
     #[test]
     fn wrong_length_and_range_are_rejected() {
-        assert!(compute(&Phq9Input { responses: vec![0; 8] }).is_err());
-        assert!(compute(&Phq9Input { responses: vec![0; 10] }).is_err());
-        assert!(compute(&Phq9Input { responses: vec![4, 0, 0, 0, 0, 0, 0, 0, 0] }).is_err());
+        assert!(
+            compute(&Phq9Input {
+                responses: vec![0; 8]
+            })
+            .is_err()
+        );
+        assert!(
+            compute(&Phq9Input {
+                responses: vec![0; 10]
+            })
+            .is_err()
+        );
+        assert!(
+            compute(&Phq9Input {
+                responses: vec![4, 0, 0, 0, 0, 0, 0, 0, 0]
+            })
+            .is_err()
+        );
     }
 
     #[test]

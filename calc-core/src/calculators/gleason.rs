@@ -22,7 +22,7 @@
 //! implemented here from the primary literature and not subject to copyright.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -256,8 +256,8 @@ impl Calculator for Gleason {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: GleasonInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: GleasonInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -344,7 +344,10 @@ mod tests {
         assert_eq!(GradeGroup::G1.number(), 1);
         assert_eq!(GradeGroup::G5.number(), 5);
         assert_eq!(GradeGroup::G2.descriptor(), "favourable intermediate risk");
-        assert_eq!(GradeGroup::G3.descriptor(), "unfavourable intermediate risk");
+        assert_eq!(
+            GradeGroup::G3.descriptor(),
+            "unfavourable intermediate risk"
+        );
     }
 
     #[test]
@@ -359,9 +362,6 @@ mod tests {
     fn schema_flags_primary_secondary_exclusion() {
         let schema = Gleason.input_schema();
         let def = &schema["properties"]["primary_pattern"]["definition"];
-        assert!(def["excludes"][0]
-            .as_str()
-            .unwrap()
-            .contains("do NOT swap"));
+        assert!(def["excludes"][0].as_str().unwrap().contains("do NOT swap"));
     }
 }

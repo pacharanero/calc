@@ -11,7 +11,7 @@
 //! The point is transparency, not obstruction: a clinician searching for FRAX
 //! finds out exactly why it is not here and where to turn, rather than silence.
 
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -231,10 +231,7 @@ copyright holder.",
         owner: "Oxford University Innovation",
         reason: "The Oxford Hip Score is copyrighted and its use in software requires a licence \
 from Oxford University Innovation.",
-        alternatives: &[
-            "EQ-5D (generic PROM)",
-            "HOOS / HOOS-12 (check licensing)",
-        ],
+        alternatives: &["EQ-5D (generic PROM)", "HOOS / HOOS-12 (check licensing)"],
         source_url: "https://innovation.ox.ac.uk/outcome-measures/oxford-hip-score-ohs/",
     },
     ProprietaryCalculator {
@@ -244,10 +241,7 @@ from Oxford University Innovation.",
         owner: "Oxford University Innovation",
         reason: "The Oxford Knee Score is copyrighted and its use in software requires a licence \
 from Oxford University Innovation.",
-        alternatives: &[
-            "EQ-5D (generic PROM)",
-            "KOOS / KOOS-12 (check licensing)",
-        ],
+        alternatives: &["EQ-5D (generic PROM)", "KOOS / KOOS-12 (check licensing)"],
         source_url: "https://innovation.ox.ac.uk/outcome-measures/oxford-knee-score-oks/",
     },
 ];
@@ -270,7 +264,11 @@ mod tests {
     fn every_proprietary_names_an_alternative_and_owner() {
         for p in PROPRIETARY {
             assert!(!p.owner.is_empty(), "{}: owner required", p.name);
-            assert!(!p.alternatives.is_empty(), "{}: alternatives required", p.name);
+            assert!(
+                !p.alternatives.is_empty(),
+                "{}: alternatives required",
+                p.name
+            );
             assert!(p.source_url.starts_with("http"), "{}: source_url", p.name);
         }
     }

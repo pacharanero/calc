@@ -10,22 +10,25 @@ version: 1.0.0
 
 Read these files in full — they are the source of truth:
 
-- `spec.md` — architecture, bridge API, result-card conventions, constraints
-- `shared/gitehr-bridge.js` — the bridge module you will import
-- `shared/styles.css` — the shared stylesheet (do not duplicate these styles locally)
-- An existing calculator (e.g. `calculators/feverpain.html`) — study its structure end-to-end before writing a single line
+- `spec/calculators.md` — architecture (one core, many surfaces), the `Calculator` trait, bridge API, result-card conventions, the roadmap
+- `calc-core/src/calculators/feverpain.rs` and `asrs.rs` — the canonical scoring logic and test-vector pattern; **`calc-core` is the source of truth for scoring**
+- `calc-web/shared/gitehr-bridge.js` — the bridge module the web tools import
+- `calc-web/shared/styles.css` — the shared stylesheet (do not duplicate these styles locally)
+- An existing web calculator (e.g. `calc-web/calculators/feverpain.html`) — study its structure end-to-end before writing a single line
 
-Also check `calculator-roadmap.md` for any notes on the calculator you are about to build.
+The roadmap (with NICE guideline references) lives in `spec/calculators.md § Calculator library roadmap`.
+
+A complete new calculator means: a `calc-core` implementation with unit tests, a `calc-cli` subcommand, and optionally a `calc-web` HTML tool whose JS logic is validated against the `calc-core` test vectors.
 
 ---
 
 ## File to create
 
 ```
-calculators/<calculator-name>.html
+calc-web/calculators/<calculator-name>.html
 ```
 
-One self-contained HTML file. No build step. No external JS beyond the bridge and optional CDN CSS.
+One self-contained HTML file. No build step. No external JS beyond the bridge and optional CDN CSS. (The scoring logic itself belongs in `calc-core` first — see below.)
 
 ---
 
@@ -111,10 +114,10 @@ One self-contained HTML file. No build step. No external JS beyond the bridge an
 
 ## Scoring logic
 
-- Implement scoring **in plain JavaScript**, inline in the `<script type="module">` block.
-- Use the authoritative **Python source** in `clinical-source-references/` as the reference.
-- Variable names and logic must mirror the Python exactly — this makes it trivially auditable.
-- If the Python uses lookup tables or non-trivial statistics, consider Pyodide (see spec).
+- The **source of truth is `calc-core`**. Implement the typed `Input`, pure `compute()`, `build_response()`, and `Calculator` impl there first, with unit tests against known vectors from the literature. Add a `calc-cli` subcommand.
+- Any web (`calc-web`) implementation mirrors `calc-core` and must be validated against the same test vectors — variable names and logic should match so it stays trivially auditable.
+- Use the authoritative source material in `calc-web/clinical-source-references/` as the clinical reference.
+- For lookup tables or non-trivial statistics, prefer embedding the data in `calc-core`; in the browser, Pyodide may run authoritative Python (see `spec/calculators.md`).
 
 ---
 

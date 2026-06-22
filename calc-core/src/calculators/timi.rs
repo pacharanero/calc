@@ -16,7 +16,7 @@
 //! contradictory age/flag pair is impossible.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -26,8 +26,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "timi";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Antman EM, Cohen M, Bernink PJLM, et al. The TIMI risk score for unstable angina/non-ST \
+pub const REFERENCE: &str = "Antman EM, Cohen M, Bernink PJLM, et al. The TIMI risk score for unstable angina/non-ST \
 elevation MI: a method for prognostication and therapeutic decision making. JAMA. \
 2000;284(7):835-842. This is the UA/NSTEMI score, distinct from the TIMI score for STEMI.";
 
@@ -300,8 +299,8 @@ impl Calculator for Timi {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: TimiInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: TimiInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -437,19 +436,22 @@ mod tests {
     fn known_cad_definition_requires_documented_stenosis() {
         let schema = Timi.input_schema();
         let excludes = &schema["properties"]["known_cad"]["definition"]["excludes"];
-        assert!(excludes
-            .as_array()
-            .unwrap()
-            .iter()
-            .any(|e| e.as_str().unwrap().contains("without documented")));
+        assert!(
+            excludes
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|e| e.as_str().unwrap().contains("without documented"))
+        );
     }
 
     #[test]
     fn risk_factor_definition_requires_three() {
         let schema = Timi.input_schema();
-        let stmt = schema["properties"]["three_or_more_cad_risk_factors"]["definition"]["statement"]
-            .as_str()
-            .unwrap();
+        let stmt =
+            schema["properties"]["three_or_more_cad_risk_factors"]["definition"]["statement"]
+                .as_str()
+                .unwrap();
         assert!(stmt.contains("Three or more"));
     }
 

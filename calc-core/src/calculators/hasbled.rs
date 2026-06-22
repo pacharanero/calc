@@ -17,7 +17,7 @@
 //! not merely a diagnosis of or treatment for hypertension.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -27,8 +27,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "hasbled";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Pisters R, Lane DA, Nieuwlaat R, de Vos CB, Crijns HJM, Lip GYH. A novel user-friendly score \
+pub const REFERENCE: &str = "Pisters R, Lane DA, Nieuwlaat R, de Vos CB, Crijns HJM, Lip GYH. A novel user-friendly score \
 (HAS-BLED) to assess 1-year risk of major bleeding in patients with atrial fibrillation: the Euro \
 Heart Survey. Chest. 2010;138(5):1093-1100. Used alongside CHA2DS2-VASc per NICE NG196.";
 
@@ -351,8 +350,8 @@ impl Calculator for HasBled {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: HasBledInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: HasBledInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -479,10 +478,12 @@ mod tests {
     fn hypertension_definition_distinguishes_from_cha2ds2vasc() {
         let schema = HasBled.input_schema();
         let excludes = &schema["properties"]["hypertension_uncontrolled"]["definition"]["excludes"];
-        assert!(excludes[0]
-            .as_str()
-            .unwrap()
-            .contains("CHA2DS2-VASc hypertension criterion"));
+        assert!(
+            excludes[0]
+                .as_str()
+                .unwrap()
+                .contains("CHA2DS2-VASc hypertension criterion")
+        );
     }
 
     #[test]

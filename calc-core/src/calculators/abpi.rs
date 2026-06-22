@@ -19,7 +19,7 @@
 //! unreliable and can mask severe disease.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -36,8 +36,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "National Institute for Health and Care Excellence. Peripheral arterial disease: diagnosis \
+pub const REFERENCE: &str = "National Institute for Health and Care Excellence. Peripheral arterial disease: diagnosis \
 and management. Clinical guideline CG147. London: NICE; 2012 (updated 2020). \
 https://www.nice.org.uk/guidance/cg147";
 
@@ -255,7 +254,10 @@ pub fn build_response(input: &AbpiInput) -> Result<CalculationResponse, CalcErro
         "right_interpretation".into(),
         json!(o.right.band.descriptor()),
     );
-    working.insert("left_interpretation".into(), json!(o.left.band.descriptor()));
+    working.insert(
+        "left_interpretation".into(),
+        json!(o.left.band.descriptor()),
+    );
     working.insert("right_band".into(), json!(o.right.band.slug()));
     working.insert("left_band".into(), json!(o.left.band.slug()));
     working.insert("overall_band".into(), json!(o.overall_band.slug()));
@@ -354,8 +356,8 @@ impl Calculator for Abpi {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: AbpiInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: AbpiInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -418,7 +420,10 @@ mod tests {
         let o = compute(&input(200.0, 200.0, 120.0, 120.0)).unwrap();
         assert!(o.overall_abpi > 1.4);
         assert_eq!(o.overall_band, Band::HighCalcified);
-        assert!(o.interpretation.contains("does NOT indicate good perfusion"));
+        assert!(
+            o.interpretation
+                .contains("does NOT indicate good perfusion")
+        );
         assert!(o.interpretation.contains("calcified"));
     }
 
@@ -480,10 +485,12 @@ mod tests {
     fn schema_flags_high_abpi_safety_exclusion() {
         let schema = Abpi.input_schema();
         let def = &schema["properties"]["left_brachial_systolic"]["definition"];
-        assert!(def["excludes"][0]
-            .as_str()
-            .unwrap()
-            .contains("good perfusion"));
+        assert!(
+            def["excludes"][0]
+                .as_str()
+                .unwrap()
+                .contains("good perfusion")
+        );
     }
 
     #[test]

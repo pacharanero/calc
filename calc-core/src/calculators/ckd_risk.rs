@@ -26,7 +26,7 @@
 //! ```
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -46,8 +46,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Kidney Disease: Improving Global Outcomes (KDIGO) CKD Work Group. KDIGO 2024 Clinical \
+pub const REFERENCE: &str = "Kidney Disease: Improving Global Outcomes (KDIGO) CKD Work Group. KDIGO 2024 Clinical \
 Practice Guideline for the Evaluation and Management of Chronic Kidney Disease. Kidney Int. \
 2024;105(4S):S117-S314. doi:10.1016/j.kint.2023.10.018";
 
@@ -315,8 +314,8 @@ impl Calculator for CkdRisk {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: CkdRiskInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: CkdRiskInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -469,7 +468,10 @@ mod tests {
         assert_eq!(r.result, json!("Moderately increased risk (yellow)"));
         assert_eq!(r.working["g_stage"], json!("G3a"));
         assert_eq!(r.working["a_stage"], json!("A1"));
-        assert_eq!(r.working["risk_category"], json!("Moderately increased risk (yellow)"));
+        assert_eq!(
+            r.working["risk_category"],
+            json!("Moderately increased risk (yellow)")
+        );
     }
 
     #[test]

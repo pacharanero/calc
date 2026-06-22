@@ -38,7 +38,7 @@
 #![allow(clippy::excessive_precision)]
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -48,8 +48,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "qrisk3";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Hippisley-Cox J, Coupland C, Brindle P. Development and validation of QRISK3 risk prediction \
+pub const REFERENCE: &str = "Hippisley-Cox J, Coupland C, Brindle P. Development and validation of QRISK3 risk prediction \
 algorithms to estimate future risk of cardiovascular disease: prospective cohort study. BMJ. \
 2017;357:j2099. doi:10.1136/bmj.j2099. Recommended by NICE NG238.";
 
@@ -202,11 +201,7 @@ pub struct Qrisk3Outcome {
 }
 
 fn b(flag: bool) -> f64 {
-    if flag {
-        1.0
-    } else {
-        0.0
-    }
+    if flag { 1.0 } else { 0.0 }
 }
 
 /// Female QRISK3-2017 linear predictor and score.
@@ -448,7 +443,9 @@ pub fn compute(input: &Qrisk3Input) -> Result<Qrisk3Outcome, CalcError> {
         ("townsend", input.townsend),
     ] {
         if !v.is_finite() {
-            return Err(CalcError::InvalidInput(format!("{name} must be a finite number")));
+            return Err(CalcError::InvalidInput(format!(
+                "{name} must be a finite number"
+            )));
         }
     }
     if input.systolic_bp_sd < 0.0 {
@@ -694,8 +691,8 @@ impl Calculator for Qrisk3 {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: Qrisk3Input =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: Qrisk3Input = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -844,7 +841,10 @@ mod tests {
         a.erectile_dysfunction = false;
         let mut b = base(60, Sex::Female);
         b.erectile_dysfunction = true;
-        assert_eq!(compute(&a).unwrap().risk_percent, compute(&b).unwrap().risk_percent);
+        assert_eq!(
+            compute(&a).unwrap().risk_percent,
+            compute(&b).unwrap().risk_percent
+        );
     }
 
     #[test]
@@ -885,7 +885,11 @@ mod tests {
         let mut i = base(64, Sex::Female);
         i.ethnicity = Ethnicity::Indian;
         let o = compute(&i).unwrap();
-        assert!(o.interpretation.contains("moderate"), "{}", o.interpretation);
+        assert!(
+            o.interpretation.contains("moderate"),
+            "{}",
+            o.interpretation
+        );
     }
 
     #[test]
@@ -894,7 +898,12 @@ mod tests {
         i.ethnicity = Ethnicity::Indian;
         let r = build_response(&i).unwrap();
         assert_eq!(r.calculator, "qrisk3");
-        assert!(r.working["disclaimer"].as_str().unwrap().contains("ClinRisk"));
+        assert!(
+            r.working["disclaimer"]
+                .as_str()
+                .unwrap()
+                .contains("ClinRisk")
+        );
         assert!(r.interpretation.contains("qrisk.org"));
     }
 
@@ -921,7 +930,12 @@ mod tests {
     fn schema_flags_bp_sd_pitfall() {
         let schema = Qrisk3.input_schema();
         let def = &schema["properties"]["systolic_bp_sd"]["definition"];
-        assert!(def["caveats"].as_str().unwrap().contains("NOT the systolic value"));
+        assert!(
+            def["caveats"]
+                .as_str()
+                .unwrap()
+                .contains("NOT the systolic value")
+        );
     }
 
     #[test]

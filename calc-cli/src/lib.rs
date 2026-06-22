@@ -41,7 +41,7 @@
 use std::io::Read;
 use std::path::Path;
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use clap::{Args, ValueEnum};
 
 use calc_core::CalculationResponse;
@@ -189,7 +189,11 @@ fn emit(response: &CalculationResponse, format: OutputFormat) -> Result<()> {
 /// Render a result as a clinician-facing text block.
 fn render_text(r: &CalculationResponse) -> String {
     let mut out = String::new();
-    out.push_str(&format!("{} = {}\n\n", r.calculator, value_to_string(&r.result)));
+    out.push_str(&format!(
+        "{} = {}\n\n",
+        r.calculator,
+        value_to_string(&r.result)
+    ));
     out.push_str(&r.interpretation);
     if !r.working.is_empty() {
         out.push_str("\n\nWorking:");

@@ -6,7 +6,7 @@
 //! it exactly so results are identical across surfaces.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -133,7 +133,10 @@ pub fn build_response(input: FeverPainInput) -> CalculationResponse {
     working.insert("level".into(), json!(o.band.slug()));
     working.insert("fever_criterion".into(), json!(input.fever));
     working.insert("purulence_criterion".into(), json!(input.purulence));
-    working.insert("attend_rapidly_criterion".into(), json!(input.attend_rapidly));
+    working.insert(
+        "attend_rapidly_criterion".into(),
+        json!(input.attend_rapidly),
+    );
     working.insert("inflamed_criterion".into(), json!(input.inflamed_tonsils));
     working.insert("no_cough_criterion".into(), json!(input.absence_of_cough));
     working.insert("streptococcus_rate".into(), json!(o.streptococcus_rate));
@@ -191,8 +194,8 @@ impl Calculator for FeverPain {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: FeverPainInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: FeverPainInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         Ok(build_response(parsed))
     }
 }
@@ -228,13 +231,22 @@ mod tests {
 
     #[test]
     fn score_two_and_three_are_delayed() {
-        assert_eq!(compute(input(true, true, false, false, false)).band, Band::DelayedAntibiotic);
-        assert_eq!(compute(input(true, true, true, false, false)).band, Band::DelayedAntibiotic);
+        assert_eq!(
+            compute(input(true, true, false, false, false)).band,
+            Band::DelayedAntibiotic
+        );
+        assert_eq!(
+            compute(input(true, true, true, false, false)).band,
+            Band::DelayedAntibiotic
+        );
     }
 
     #[test]
     fn score_four_and_five_are_immediate() {
-        assert_eq!(compute(input(true, true, true, true, false)).band, Band::ImmediateAntibiotic);
+        assert_eq!(
+            compute(input(true, true, true, true, false)).band,
+            Band::ImmediateAntibiotic
+        );
         let o = compute(input(true, true, true, true, true));
         assert_eq!(o.score, 5);
         assert_eq!(o.band, Band::ImmediateAntibiotic);

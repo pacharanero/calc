@@ -20,7 +20,7 @@
 //! algorithm, and the response lists exactly which criteria were positive.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -30,8 +30,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "chalice";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Dunning J, Daly JP, Lomas J-P, Lecky F, Batchelor J, Mackway-Jones K. Derivation of the \
+pub const REFERENCE: &str = "Dunning J, Daly JP, Lomas J-P, Lecky F, Batchelor J, Mackway-Jones K. Derivation of the \
 children's head injury algorithm for the prediction of important clinical events decision rule for \
 head injury in children. Arch Dis Child. 2006;91(11):885-891. Reflected in NICE head injury \
 guidance (CG176 / NG232).";
@@ -280,11 +279,12 @@ pub fn build_response(input: &ChaliceInput) -> Result<CalculationResponse, CalcE
     working.insert("positive_count".into(), json!(o.positive.len()));
     working.insert(
         "positive_criteria".into(),
-        json!(o
-            .positive
-            .iter()
-            .map(|c| json!({ "group": c.group, "key": c.key, "label": c.label }))
-            .collect::<Vec<_>>()),
+        json!(
+            o.positive
+                .iter()
+                .map(|c| json!({ "group": c.group, "key": c.key, "label": c.label }))
+                .collect::<Vec<_>>()
+        ),
     );
 
     let result = if o.ct_recommended {
@@ -437,8 +437,8 @@ NICE NG232)."
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: ChaliceInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: ChaliceInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -446,6 +446,9 @@ NICE NG232)."
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// A named criterion setter: a label and a function that flips one input flag.
+    type Setter = (&'static str, fn(&mut ChaliceInput));
 
     /// A child with no positive criteria. `age_years` lets each test target the
     /// age-dependent behaviour.
@@ -481,13 +484,17 @@ mod tests {
     #[test]
     fn each_history_criterion_triggers_ct() {
         // Apply each history flag in isolation and confirm it alone fires.
-        let setters: Vec<(&str, fn(&mut ChaliceInput))> = vec![
-            ("loss_of_consciousness_over_5_min", |i| i.loss_of_consciousness_over_5_min = true),
+        let setters: Vec<Setter> = vec![
+            ("loss_of_consciousness_over_5_min", |i| {
+                i.loss_of_consciousness_over_5_min = true
+            }),
             ("amnesia_over_5_min", |i| i.amnesia_over_5_min = true),
             ("abnormal_drowsiness", |i| i.abnormal_drowsiness = true),
             ("vomiting_3_or_more", |i| i.vomiting_3_or_more = true),
             ("suspected_nai", |i| i.suspected_nai = true),
-            ("seizure_no_epilepsy_history", |i| i.seizure_no_epilepsy_history = true),
+            ("seizure_no_epilepsy_history", |i| {
+                i.seizure_no_epilepsy_history = true
+            }),
         ];
         for (key, set) in setters {
             let mut i = base(5);
@@ -503,12 +510,14 @@ mod tests {
     #[test]
     fn each_examination_criterion_triggers_ct() {
         // GCS handled separately; bruise handled separately (age-dependent).
-        let setters: Vec<(&str, fn(&mut ChaliceInput))> = vec![
+        let setters: Vec<Setter> = vec![
             (
                 "penetrating_or_depressed_skull_injury_or_tense_fontanelle",
                 |i| i.penetrating_or_depressed_skull_injury_or_tense_fontanelle = true,
             ),
-            ("basal_skull_fracture_signs", |i| i.basal_skull_fracture_signs = true),
+            ("basal_skull_fracture_signs", |i| {
+                i.basal_skull_fracture_signs = true
+            }),
             ("focal_neurology", |i| i.focal_neurology = true),
         ];
         for (key, set) in setters {
@@ -524,7 +533,7 @@ mod tests {
 
     #[test]
     fn each_mechanism_criterion_triggers_ct() {
-        let setters: Vec<(&str, fn(&mut ChaliceInput))> = vec![
+        let setters: Vec<Setter> = vec![
             ("high_speed_rta", |i| i.high_speed_rta = true),
             ("fall_over_3m", |i| i.fall_over_3m = true),
             ("high_speed_projectile", |i| i.high_speed_projectile = true),
@@ -646,6 +655,11 @@ mod tests {
         let gcs = &schema["properties"]["gcs_below_15"]["definition"];
         assert!(gcs["caveats"].as_str().unwrap().contains("under 1 year"));
         let bruise = &schema["properties"]["bruise_swelling_laceration_over_5cm"]["definition"];
-        assert!(bruise["statement"].as_str().unwrap().contains("under 1 year"));
+        assert!(
+            bruise["statement"]
+                .as_str()
+                .unwrap()
+                .contains("under 1 year")
+        );
     }
 }

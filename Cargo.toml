@@ -1,0 +1,20 @@
+[workspace]
+members = [
+    "calc-core",
+    "calc-cli",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+authors = ["Marcus Baw"]
+license = "AGPL-3.0-or-later"
+
+[workspace.dependencies]
+# Shared across the calculator crates. Kept deliberately small: calc-core is a
+# pure leaf (serde only); calc-cli adds a thin CLI layer (anyhow, clap).
+anyhow = "1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+clap = { version = "4.6", features = ["derive"] }

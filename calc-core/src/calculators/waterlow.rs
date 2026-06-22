@@ -35,7 +35,7 @@
 //! Risk bands (per the card): 10+ at risk; 15+ high risk; 20+ very high risk.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -45,8 +45,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "waterlow";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Waterlow J. Pressure sores: a risk assessment card. Nurs Times. 1985;81(48):49-55. \
+pub const REFERENCE: &str = "Waterlow J. Pressure sores: a risk assessment card. Nurs Times. 1985;81(48):49-55. \
 Revised 2005 card per judy-waterlow.co.uk. Risk bands: 10+ at risk, 15+ high, 20+ very high.";
 
 /// Distribution licence: the Waterlow card is made freely available by the
@@ -500,7 +499,10 @@ pub fn build_response(input: &WaterlowInput) -> Result<CalculationResponse, Calc
     working.insert("sex".into(), json!(o.sex_points));
     working.insert("age".into(), json!(o.age_points));
     working.insert("nutrition".into(), json!(o.nutrition_points));
-    working.insert("tissue_malnutrition".into(), json!(o.tissue_malnutrition_points));
+    working.insert(
+        "tissue_malnutrition".into(),
+        json!(o.tissue_malnutrition_points),
+    );
     working.insert("neurological_deficit".into(), json!(o.neurological_points));
     working.insert("surgery_trauma".into(), json!(o.surgery_points));
     working.insert("medication".into(), json!(o.medication_points));
@@ -641,8 +643,8 @@ impl Calculator for Waterlow {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: WaterlowInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: WaterlowInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -854,7 +856,13 @@ mod tests {
         let props = &schema["properties"];
         assert!(props["build"]["enum"].as_array().unwrap().len() == 4);
         assert!(props["mobility"]["enum"].as_array().unwrap().len() == 6);
-        assert!(props["tissue_malnutrition"]["enum"].as_array().unwrap().len() == 7);
+        assert!(
+            props["tissue_malnutrition"]["enum"]
+                .as_array()
+                .unwrap()
+                .len()
+                == 7
+        );
         let required = schema["required"].as_array().unwrap();
         assert!(required.iter().any(|v| v == "weight_loss"));
         assert!(required.iter().any(|v| v == "skin_broken"));

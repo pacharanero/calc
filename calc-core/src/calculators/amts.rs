@@ -12,7 +12,7 @@
 //! at the end, so its TRUE condition is correct recall, not correct repetition.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -30,8 +30,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Hodkinson HM. Evaluation of a mental test score for assessment of mental impairment in the \
+pub const REFERENCE: &str = "Hodkinson HM. Evaluation of a mental test score for assessment of mental impairment in the \
 elderly. Age Ageing. 1972;1(4):233-238. doi:10.1093/ageing/1.4.233";
 
 /// Number of items.
@@ -218,8 +217,8 @@ impl Calculator for Amts {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: AmtsInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: AmtsInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -296,22 +295,24 @@ mod tests {
     #[test]
     fn missing_and_unknown_fields_are_rejected() {
         // Missing a required field.
-        assert!(Amts
-            .calculate(&json!({
+        assert!(
+            Amts.calculate(&json!({
                 "age": true, "time": true, "address_recall": true, "year": true,
                 "place": true, "recognise_two_persons": true, "date_of_birth": true,
                 "year_ww1": true, "monarch": true
             }))
-            .is_err());
+            .is_err()
+        );
         // Unknown field.
-        assert!(Amts
-            .calculate(&json!({
+        assert!(
+            Amts.calculate(&json!({
                 "age": true, "time": true, "address_recall": true, "year": true,
                 "place": true, "recognise_two_persons": true, "date_of_birth": true,
                 "year_ww1": true, "monarch": true, "count_backwards": true,
                 "extra": true
             }))
-            .is_err());
+            .is_err()
+        );
     }
 
     #[test]

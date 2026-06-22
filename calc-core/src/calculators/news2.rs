@@ -15,7 +15,7 @@
 //!   flag regardless of the total.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -25,8 +25,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "news2";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Royal College of Physicians. National Early Warning Score (NEWS) 2: Standardising the \
+pub const REFERENCE: &str = "Royal College of Physicians. National Early Warning Score (NEWS) 2: Standardising the \
 assessment of acute-illness severity in the NHS. Updated report of a working party. London: RCP, \
 2017.";
 
@@ -173,11 +172,7 @@ fn spo2_scale2_score(spo2: u16, on_oxygen: bool) -> u8 {
 }
 
 fn air_or_oxygen_score(on_oxygen: bool) -> u8 {
-    if on_oxygen {
-        2
-    } else {
-        0
-    }
+    if on_oxygen { 2 } else { 0 }
 }
 
 fn systolic_bp_score(sbp: u16) -> u8 {
@@ -325,7 +320,10 @@ pub fn build_response(input: &News2Input) -> Result<CalculationResponse, CalcErr
 
     let mut working = Map::new();
     working.insert("total_score".into(), json!(o.total));
-    working.insert("respiratory_rate_score".into(), json!(o.respiratory_rate_score));
+    working.insert(
+        "respiratory_rate_score".into(),
+        json!(o.respiratory_rate_score),
+    );
     working.insert("spo2_score".into(), json!(o.spo2_score));
     working.insert("air_or_oxygen_score".into(), json!(o.air_or_oxygen_score));
     working.insert("systolic_bp_score".into(), json!(o.systolic_bp_score));
@@ -455,8 +453,8 @@ impl Calculator for News2 {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: News2Input =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: News2Input = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -552,7 +550,11 @@ mod tests {
         assert_eq!(spo2_scale2_score(94, true), 1);
         assert_eq!(spo2_scale2_score(95, true), 2);
         assert_eq!(spo2_scale2_score(96, true), 2);
-        assert_eq!(spo2_scale2_score(97, true), 3, "over-oxygenation in COPD scores 3");
+        assert_eq!(
+            spo2_scale2_score(97, true),
+            3,
+            "over-oxygenation in COPD scores 3"
+        );
         assert_eq!(spo2_scale2_score(100, true), 3);
     }
 
@@ -736,10 +738,12 @@ mod tests {
     fn schema_flags_scale2_safety() {
         let schema = News2.input_schema();
         let excludes = &schema["properties"]["spo2_scale"]["definition"]["excludes"];
-        assert!(excludes[0]
-            .as_str()
-            .unwrap()
-            .contains("patient-safety error"));
+        assert!(
+            excludes[0]
+                .as_str()
+                .unwrap()
+                .contains("patient-safety error")
+        );
     }
 
     #[test]

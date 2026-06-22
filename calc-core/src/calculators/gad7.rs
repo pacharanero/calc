@@ -6,7 +6,7 @@
 //! further assessment.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -24,8 +24,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Spitzer RL, Kroenke K, Williams JBW, Löwe B. A brief measure for assessing generalized \
+pub const REFERENCE: &str = "Spitzer RL, Kroenke K, Williams JBW, Löwe B. A brief measure for assessing generalized \
 anxiety disorder: the GAD-7. Arch Intern Med. 2006;166(10):1092-1097. doi:10.1001/archinte.166.10.1092";
 
 /// Number of items.
@@ -103,15 +102,18 @@ pub fn compute(input: &Gad7Input) -> Result<Gad7Outcome, CalcError> {
     let severity = Severity::from_total(total);
     let above_case_threshold = total >= CASE_THRESHOLD;
 
-    let mut interpretation =
-        format!("Total score {total}/21 indicates {} anxiety symptoms.", severity.label());
+    let mut interpretation = format!(
+        "Total score {total}/21 indicates {} anxiety symptoms.",
+        severity.label()
+    );
     if above_case_threshold {
         interpretation.push_str(
             " At or above the cut-point of 10 for likely generalised anxiety disorder; \
 further assessment is warranted.",
         );
     } else {
-        interpretation.push_str(" Below the cut-point of 10 for likely generalised anxiety disorder.");
+        interpretation
+            .push_str(" Below the cut-point of 10 for likely generalised anxiety disorder.");
     }
     interpretation.push_str(" GAD-7 supports severity grading; it is not a diagnosis.");
 
@@ -205,8 +207,8 @@ impl Calculator for Gad7 {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: Gad7Input =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: Gad7Input = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -216,7 +218,9 @@ mod tests {
     use super::*;
 
     fn responses(v: [u8; 7]) -> Gad7Input {
-        Gad7Input { responses: v.to_vec() }
+        Gad7Input {
+            responses: v.to_vec(),
+        }
     }
 
     #[test]
@@ -259,9 +263,24 @@ mod tests {
 
     #[test]
     fn wrong_length_and_range_are_rejected() {
-        assert!(compute(&Gad7Input { responses: vec![0; 6] }).is_err());
-        assert!(compute(&Gad7Input { responses: vec![0; 8] }).is_err());
-        assert!(compute(&Gad7Input { responses: vec![4, 0, 0, 0, 0, 0, 0] }).is_err());
+        assert!(
+            compute(&Gad7Input {
+                responses: vec![0; 6]
+            })
+            .is_err()
+        );
+        assert!(
+            compute(&Gad7Input {
+                responses: vec![0; 8]
+            })
+            .is_err()
+        );
+        assert!(
+            compute(&Gad7Input {
+                responses: vec![4, 0, 0, 0, 0, 0, 0]
+            })
+            .is_err()
+        );
     }
 
     #[test]

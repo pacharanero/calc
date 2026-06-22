@@ -17,7 +17,7 @@
 //! mmol/L (the SI and conventional units coincide for sodium).
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -34,8 +34,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Barber K, Madden S, Allen J, et al. Elective liver transplant list mortality: development of a \
+pub const REFERENCE: &str = "Barber K, Madden S, Allen J, et al. Elective liver transplant list mortality: development of a \
 United Kingdom end-stage liver disease score. Transplantation. 2011;92(4):469-476. \
 doi:10.1097/TP.0b013e318225db4d";
 
@@ -104,7 +103,8 @@ fn to_umol(value: f64, unit: Unit, umol_per_mgdl: f64) -> f64 {
 
 /// Pure scoring: the UKELD equation.
 pub fn compute(input: &UkeldInput) -> Result<UkeldOutcome, CalcError> {
-    if input.inr <= 0.0 || input.creatinine <= 0.0 || input.bilirubin <= 0.0 || input.sodium <= 0.0 {
+    if input.inr <= 0.0 || input.creatinine <= 0.0 || input.bilirubin <= 0.0 || input.sodium <= 0.0
+    {
         return Err(CalcError::InvalidInput(
             "INR, creatinine, bilirubin, and sodium must be positive".into(),
         ));
@@ -118,14 +118,21 @@ pub fn compute(input: &UkeldInput) -> Result<UkeldOutcome, CalcError> {
     }
 
     // Normalise creatinine and bilirubin to umol/L (UKELD's native unit).
-    let creatinine_umol = to_umol(input.creatinine, input.creatinine_unit, CREATININE_UMOL_PER_MGDL);
-    let bilirubin_umol = to_umol(input.bilirubin, input.bilirubin_unit, BILIRUBIN_UMOL_PER_MGDL);
+    let creatinine_umol = to_umol(
+        input.creatinine,
+        input.creatinine_unit,
+        CREATININE_UMOL_PER_MGDL,
+    );
+    let bilirubin_umol = to_umol(
+        input.bilirubin,
+        input.bilirubin_unit,
+        BILIRUBIN_UMOL_PER_MGDL,
+    );
 
-    let raw_score = 5.395 * input.inr.ln()
-        + 1.485 * creatinine_umol.ln()
-        + 3.13 * bilirubin_umol.ln()
-        - 81.565 * input.sodium.ln()
-        + 435.0;
+    let raw_score =
+        5.395 * input.inr.ln() + 1.485 * creatinine_umol.ln() + 3.13 * bilirubin_umol.ln()
+            - 81.565 * input.sodium.ln()
+            + 435.0;
 
     let score = raw_score.round() as i32;
     let meets_listing_threshold = score >= LISTING_THRESHOLD;
@@ -137,7 +144,11 @@ predicted 1-year mortality); this patient {} that threshold. Higher scores indic
 waiting-list mortality risk. UKELD informs listing eligibility - the actual offer of an organ is \
 decided by the Transplant Benefit Score, and exceptional cases may be listed via the National \
 Appeals Panel below the threshold.",
-        if meets_listing_threshold { "meets" } else { "does not meet" }
+        if meets_listing_threshold {
+            "meets"
+        } else {
+            "does not meet"
+        }
     );
 
     Ok(UkeldOutcome {
@@ -162,7 +173,10 @@ pub fn build_response(input: &UkeldInput) -> Result<CalculationResponse, CalcErr
     working.insert("raw_score".into(), json!(o.raw_score));
     working.insert("ukeld_score".into(), json!(o.score));
     working.insert("listing_threshold".into(), json!(LISTING_THRESHOLD));
-    working.insert("meets_listing_threshold".into(), json!(o.meets_listing_threshold));
+    working.insert(
+        "meets_listing_threshold".into(),
+        json!(o.meets_listing_threshold),
+    );
 
     Ok(CalculationResponse {
         calculator: NAME.to_string(),
@@ -275,8 +289,8 @@ impl Calculator for Ukeld {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: UkeldInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: UkeldInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -285,7 +299,14 @@ impl Calculator for Ukeld {
 mod tests {
     use super::*;
 
-    fn input(inr: f64, creat: f64, creat_unit: Unit, bili: f64, bili_unit: Unit, na: f64) -> UkeldInput {
+    fn input(
+        inr: f64,
+        creat: f64,
+        creat_unit: Unit,
+        bili: f64,
+        bili_unit: Unit,
+        na: f64,
+    ) -> UkeldInput {
         UkeldInput {
             inr,
             creatinine: creat,
@@ -361,7 +382,12 @@ mod tests {
         // Worse synthetic function (high bilirubin, high INR, low sodium) raises UKELD.
         let mild = compute(&input(1.2, 90.0, Unit::UmolL, 40.0, Unit::UmolL, 136.0)).unwrap();
         let severe = compute(&input(2.5, 180.0, Unit::UmolL, 300.0, Unit::UmolL, 128.0)).unwrap();
-        assert!(severe.score > mild.score, "{} vs {}", severe.score, mild.score);
+        assert!(
+            severe.score > mild.score,
+            "{} vs {}",
+            severe.score,
+            mild.score
+        );
         assert!(severe.meets_listing_threshold);
     }
 
@@ -371,8 +397,28 @@ mod tests {
         assert!(compute(&input(1.0, 0.0, Unit::UmolL, 20.0, Unit::UmolL, 138.0)).is_err());
         assert!(compute(&input(1.0, 80.0, Unit::UmolL, -1.0, Unit::UmolL, 138.0)).is_err());
         assert!(compute(&input(1.0, 80.0, Unit::UmolL, 20.0, Unit::UmolL, 0.0)).is_err());
-        assert!(compute(&input(f64::NAN, 80.0, Unit::UmolL, 20.0, Unit::UmolL, 138.0)).is_err());
-        assert!(compute(&input(1.0, 80.0, Unit::UmolL, f64::INFINITY, Unit::UmolL, 138.0)).is_err());
+        assert!(
+            compute(&input(
+                f64::NAN,
+                80.0,
+                Unit::UmolL,
+                20.0,
+                Unit::UmolL,
+                138.0
+            ))
+            .is_err()
+        );
+        assert!(
+            compute(&input(
+                1.0,
+                80.0,
+                Unit::UmolL,
+                f64::INFINITY,
+                Unit::UmolL,
+                138.0
+            ))
+            .is_err()
+        );
     }
 
     #[test]
@@ -380,11 +426,26 @@ mod tests {
         let schema = Ukeld.input_schema();
         let creat = &schema["properties"]["creatinine_unit"];
         assert_eq!(creat["default"], json!("umol/L"));
-        assert!(creat["definition"]["statement"].as_str().unwrap().contains("NATIVELY in umol/L"));
-        assert!(creat["definition"]["excludes"][0].as_str().unwrap().contains("88x"));
+        assert!(
+            creat["definition"]["statement"]
+                .as_str()
+                .unwrap()
+                .contains("NATIVELY in umol/L")
+        );
+        assert!(
+            creat["definition"]["excludes"][0]
+                .as_str()
+                .unwrap()
+                .contains("88x")
+        );
         let bili = &schema["properties"]["bilirubin_unit"];
         assert_eq!(bili["default"], json!("umol/L"));
-        assert!(bili["definition"]["excludes"][0].as_str().unwrap().contains("17x"));
+        assert!(
+            bili["definition"]["excludes"][0]
+                .as_str()
+                .unwrap()
+                .contains("17x")
+        );
     }
 
     #[test]
@@ -398,9 +459,13 @@ mod tests {
             "sodium": 138.0
         });
         let dynamic = Ukeld.calculate(&value).unwrap();
-        let typed = build_response(&input(1.0, 80.0, Unit::UmolL, 20.0, Unit::UmolL, 138.0)).unwrap();
+        let typed =
+            build_response(&input(1.0, 80.0, Unit::UmolL, 20.0, Unit::UmolL, 138.0)).unwrap();
         assert_eq!(dynamic, typed);
         assert_eq!(dynamic.result, json!(49));
-        assert_eq!(dynamic.working["listing_threshold"], json!(LISTING_THRESHOLD));
+        assert_eq!(
+            dynamic.working["listing_threshold"],
+            json!(LISTING_THRESHOLD)
+        );
     }
 }

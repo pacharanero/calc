@@ -14,7 +14,7 @@
 //! the ambiguity is flagged in the schema `definition` for that field.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -31,8 +31,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Celli BR, Cote CG, Marin JM, et al. The body-mass index, airflow obstruction, dyspnea, and \
+pub const REFERENCE: &str = "Celli BR, Cote CG, Marin JM, et al. The body-mass index, airflow obstruction, dyspnea, and \
 exercise capacity index in chronic obstructive pulmonary disease. N Engl J Med. \
 2004;350(10):1005-1012. doi:10.1056/NEJMoa021322";
 
@@ -331,8 +330,8 @@ impl Calculator for Bode {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: BodeInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: BodeInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }

@@ -9,7 +9,7 @@
 //! than assumed - a wrong unit silently changes the result by ~88x.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -26,8 +26,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Inker LA, Eneanya ND, Coresh J, et al. New creatinine- and cystatin C-based equations to \
+pub const REFERENCE: &str = "Inker LA, Eneanya ND, Coresh J, et al. New creatinine- and cystatin C-based equations to \
 estimate GFR without race. N Engl J Med. 2021;385(19):1737-1749. doi:10.1056/NEJMoa2102953";
 
 /// umol/L per mg/dL for creatinine (molar mass 113.12 g/mol).
@@ -268,8 +267,8 @@ impl Calculator for Egfr {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: EgfrInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: EgfrInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -292,7 +291,11 @@ mod tests {
     fn male_normal_creatinine() {
         // 50yo male, Scr 0.9 mg/dL (ratio = 1.0): 142 * 0.9938^50 = ~104.
         let o = compute(&input(50, Sex::Male, 0.9, CreatinineUnit::MgDl)).unwrap();
-        assert!((o.egfr as i64 - 104).abs() <= 1, "expected ~104, got {}", o.egfr);
+        assert!(
+            (o.egfr as i64 - 104).abs() <= 1,
+            "expected ~104, got {}",
+            o.egfr
+        );
         assert_eq!(o.stage, Stage::G1);
     }
 
@@ -300,7 +303,11 @@ mod tests {
     fn female_normal_creatinine() {
         // 60yo female, Scr 0.8 mg/dL: ~84.
         let o = compute(&input(60, Sex::Female, 0.8, CreatinineUnit::MgDl)).unwrap();
-        assert!((o.egfr as i64 - 84).abs() <= 1, "expected ~84, got {}", o.egfr);
+        assert!(
+            (o.egfr as i64 - 84).abs() <= 1,
+            "expected ~84, got {}",
+            o.egfr
+        );
         assert_eq!(o.stage, Stage::G2);
     }
 
@@ -308,7 +315,13 @@ mod tests {
     fn umol_per_l_matches_equivalent_mgdl() {
         // 0.9 mg/dL == 79.56 umol/L; both must give the same eGFR.
         let a = compute(&input(50, Sex::Male, 0.9, CreatinineUnit::MgDl)).unwrap();
-        let b = compute(&input(50, Sex::Male, 0.9 * UMOL_PER_MGDL, CreatinineUnit::UmolL)).unwrap();
+        let b = compute(&input(
+            50,
+            Sex::Male,
+            0.9 * UMOL_PER_MGDL,
+            CreatinineUnit::UmolL,
+        ))
+        .unwrap();
         assert_eq!(a.egfr, b.egfr);
     }
 
@@ -343,7 +356,8 @@ mod tests {
 
     #[test]
     fn dynamic_calculate_matches_typed() {
-        let value = json!({ "age": 50, "sex": "male", "creatinine": 0.9, "creatinine_unit": "mg/dL" });
+        let value =
+            json!({ "age": 50, "sex": "male", "creatinine": 0.9, "creatinine_unit": "mg/dL" });
         let dynamic = Egfr.calculate(&value).unwrap();
         let typed = build_response(&input(50, Sex::Male, 0.9, CreatinineUnit::MgDl)).unwrap();
         assert_eq!(dynamic, typed);

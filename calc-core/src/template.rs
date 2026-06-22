@@ -32,7 +32,10 @@ fn placeholder(prop: &Value) -> Value {
     if prop.get("type").and_then(Value::as_str) == Some("object") {
         return template_from_schema(prop);
     }
-    let desc = prop.get("description").and_then(Value::as_str).unwrap_or("");
+    let desc = prop
+        .get("description")
+        .and_then(Value::as_str)
+        .unwrap_or("");
     let kind = type_hint(prop);
     let text = if desc.is_empty() {
         format!("<{kind}>")
@@ -116,7 +119,10 @@ mod tests {
             }
         });
         let t = template_from_schema(&schema);
-        assert_eq!(t["smoking"], json!("<one of: non|ex|current> Smoking status"));
+        assert_eq!(
+            t["smoking"],
+            json!("<one of: non|ex|current> Smoking status")
+        );
     }
 
     #[test]

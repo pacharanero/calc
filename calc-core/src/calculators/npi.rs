@@ -20,7 +20,7 @@
 //! (2.4, 3.4, 4.4, 5.4) are the widely cited cut-points.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -37,8 +37,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Galea MH, Blamey RW, Elston CE, Ellis IO. The Nottingham Prognostic Index in primary breast \
+pub const REFERENCE: &str = "Galea MH, Blamey RW, Elston CE, Ellis IO. The Nottingham Prognostic Index in primary breast \
 cancer. Breast Cancer Res Treat. 1992;22(3):207-219. doi:10.1007/BF01840834";
 
 /// Weight applied to the invasive tumour size (cm) in the index.
@@ -152,9 +151,7 @@ pub fn compute(input: &NpiInput) -> Result<NpiOutcome, CalcError> {
         ));
     }
     if !(1..=3).contains(&input.grade) {
-        return Err(CalcError::InvalidInput(
-            "grade must be 1, 2, or 3".into(),
-        ));
+        return Err(CalcError::InvalidInput("grade must be 1, 2, or 3".into()));
     }
 
     let raw = SIZE_WEIGHT * input.tumour_size_cm + input.node_stage as f64 + input.grade as f64;
@@ -185,7 +182,10 @@ pub fn build_response(input: &NpiInput) -> Result<CalculationResponse, CalcError
     let mut working = Map::new();
     working.insert("npi".into(), json!(o.npi));
     working.insert("prognostic_group".into(), json!(o.group.slug()));
-    working.insert("size_component".into(), json!(round2(SIZE_WEIGHT * input.tumour_size_cm)));
+    working.insert(
+        "size_component".into(),
+        json!(round2(SIZE_WEIGHT * input.tumour_size_cm)),
+    );
     working.insert("node_stage".into(), json!(input.node_stage));
     working.insert("grade".into(), json!(input.grade));
 
@@ -283,8 +283,8 @@ impl Calculator for Npi {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: NpiInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: NpiInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -380,9 +380,6 @@ mod tests {
     fn schema_flags_node_count_trap() {
         let schema = Npi.input_schema();
         let def = &schema["properties"]["node_stage"]["definition"];
-        assert!(def["excludes"][0]
-            .as_str()
-            .unwrap()
-            .contains("raw count"));
+        assert!(def["excludes"][0].as_str().unwrap().contains("raw count"));
     }
 }

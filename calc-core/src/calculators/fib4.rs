@@ -6,7 +6,7 @@
 //! above 2.67 is high risk and warrants referral.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -23,8 +23,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Sterling RK, Lissen E, Clumeck N, et al. Development of a simple noninvasive index to predict \
+pub const REFERENCE: &str = "Sterling RK, Lissen E, Clumeck N, et al. Development of a simple noninvasive index to predict \
 significant fibrosis in patients with HIV/HCV coinfection. Hepatology. 2006;43(6):1317-1325. \
 Thresholds per NICE NG49 (NAFLD).";
 
@@ -219,8 +218,8 @@ impl Calculator for Fib4 {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: Fib4Input =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: Fib4Input = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -230,7 +229,12 @@ mod tests {
     use super::*;
 
     fn input(age: u8, ast: f64, alt: f64, platelets: f64) -> Fib4Input {
-        Fib4Input { age, ast, alt, platelets }
+        Fib4Input {
+            age,
+            ast,
+            alt,
+            platelets,
+        }
     }
 
     #[test]

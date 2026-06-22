@@ -15,7 +15,7 @@
 //! easy to get subtly wrong, so each carries a `definition` block.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -32,8 +32,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Pugh RNH, Murray-Lyon IM, Dawson JL, Pietroni MC, Williams R. Transection of the oesophagus \
+pub const REFERENCE: &str = "Pugh RNH, Murray-Lyon IM, Dawson JL, Pietroni MC, Williams R. Transection of the oesophagus \
 for bleeding oesophageal varices. Br J Surg. 1973;60(8):646-649. doi:10.1002/bjs.1800600817";
 
 /// umol/L per mg/dL for bilirubin (molar mass 584.66 g/mol): 1 mg/dL = 17.1 umol/L.
@@ -235,11 +234,8 @@ pub fn compute(input: &ChildPughInput) -> Result<ChildPughOutcome, CalcError> {
     let ascites_points = ascites_points(input.ascites);
     let encephalopathy_points = encephalopathy_points(input.encephalopathy);
 
-    let score = bilirubin_points
-        + albumin_points
-        + inr_points
-        + ascites_points
-        + encephalopathy_points;
+    let score =
+        bilirubin_points + albumin_points + inr_points + ascites_points + encephalopathy_points;
 
     let class = Class::from_score(score);
 
@@ -274,7 +270,10 @@ pub fn build_response(input: &ChildPughInput) -> Result<CalculationResponse, Cal
     working.insert("albumin_points".into(), json!(o.albumin_points));
     working.insert("inr_points".into(), json!(o.inr_points));
     working.insert("ascites_points".into(), json!(o.ascites_points));
-    working.insert("encephalopathy_points".into(), json!(o.encephalopathy_points));
+    working.insert(
+        "encephalopathy_points".into(),
+        json!(o.encephalopathy_points),
+    );
     working.insert("total_score".into(), json!(o.score));
     working.insert("class".into(), json!(o.class.slug()));
 
@@ -424,8 +423,8 @@ impl Calculator for ChildPugh {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: ChildPughInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: ChildPughInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -687,14 +686,18 @@ mod tests {
     fn schema_documents_treated_grades() {
         let schema = ChildPugh.input_schema();
         let ascites = &schema["properties"]["ascites"]["definition"];
-        assert!(ascites["includes"][0]
-            .as_str()
-            .unwrap()
-            .contains("Diuretic-controlled"));
+        assert!(
+            ascites["includes"][0]
+                .as_str()
+                .unwrap()
+                .contains("Diuretic-controlled")
+        );
         let enc = &schema["properties"]["encephalopathy"]["definition"];
-        assert!(enc["includes"][0]
-            .as_str()
-            .unwrap()
-            .contains("controlled on medication"));
+        assert!(
+            enc["includes"][0]
+                .as_str()
+                .unwrap()
+                .contains("controlled on medication")
+        );
     }
 }

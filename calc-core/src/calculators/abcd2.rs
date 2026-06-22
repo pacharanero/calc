@@ -19,7 +19,7 @@
 //! not to gate referral.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -29,8 +29,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "abcd2";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Johnston SC, Rothwell PM, Nguyen-Huynh MN, et al. Validation and refinement of scores to \
+pub const REFERENCE: &str = "Johnston SC, Rothwell PM, Nguyen-Huynh MN, et al. Validation and refinement of scores to \
 predict very early stroke risk after transient ischaemic attack. Lancet. 2007;369(9558):283-292. \
 NICE NG128 advises against using ABCD2 to guide referral urgency.";
 
@@ -183,7 +182,9 @@ pub fn compute(input: &Abcd2Input) -> Result<Abcd2Outcome, CalcError> {
 
     let risk_phrase = match band {
         RiskBand::Low => "low risk (about 1.0% 2-day stroke risk in the derivation cohorts)",
-        RiskBand::Moderate => "moderate risk (about 4.1% 2-day stroke risk in the derivation cohorts)",
+        RiskBand::Moderate => {
+            "moderate risk (about 4.1% 2-day stroke risk in the derivation cohorts)"
+        }
         RiskBand::High => "high risk (about 8.1% 2-day stroke risk in the derivation cohorts)",
     };
 
@@ -328,8 +329,8 @@ using ABCD2 to guide referral urgency."
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: Abcd2Input =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: Abcd2Input = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }

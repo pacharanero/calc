@@ -17,7 +17,7 @@
 //! artefact such as `4.4000000000000004`.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -27,8 +27,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "wells_pe";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Wells PS, Anderson DR, Rodger M, et al. Derivation of a simple clinical model to categorize \
+pub const REFERENCE: &str = "Wells PS, Anderson DR, Rodger M, et al. Derivation of a simple clinical model to categorize \
 patients probability of pulmonary embolism: increasing the models utility with the SimpliRED \
 D-dimer. Thromb Haemost. 2000;83(3):416-420. Two-level thresholds per NICE NG158.";
 
@@ -170,13 +169,34 @@ pub fn build_response(input: &WellsPeInput) -> Result<CalculationResponse, CalcE
     let o = compute(input)?;
 
     let mut working = Map::new();
-    working.insert("clinical_signs_of_dvt".into(), json!(3.0 * f64::from(input.clinical_signs_of_dvt)));
-    working.insert("pe_most_likely_diagnosis".into(), json!(3.0 * f64::from(input.pe_most_likely_diagnosis)));
-    working.insert("heart_rate_over_100".into(), json!(1.5 * f64::from(input.heart_rate_over_100)));
-    working.insert("immobilisation_or_surgery".into(), json!(1.5 * f64::from(input.immobilisation_or_surgery)));
-    working.insert("previous_dvt_or_pe".into(), json!(1.5 * f64::from(input.previous_dvt_or_pe)));
-    working.insert("haemoptysis".into(), json!(1.0 * f64::from(input.haemoptysis)));
-    working.insert("malignancy".into(), json!(1.0 * f64::from(input.malignancy)));
+    working.insert(
+        "clinical_signs_of_dvt".into(),
+        json!(3.0 * f64::from(input.clinical_signs_of_dvt)),
+    );
+    working.insert(
+        "pe_most_likely_diagnosis".into(),
+        json!(3.0 * f64::from(input.pe_most_likely_diagnosis)),
+    );
+    working.insert(
+        "heart_rate_over_100".into(),
+        json!(1.5 * f64::from(input.heart_rate_over_100)),
+    );
+    working.insert(
+        "immobilisation_or_surgery".into(),
+        json!(1.5 * f64::from(input.immobilisation_or_surgery)),
+    );
+    working.insert(
+        "previous_dvt_or_pe".into(),
+        json!(1.5 * f64::from(input.previous_dvt_or_pe)),
+    );
+    working.insert(
+        "haemoptysis".into(),
+        json!(1.0 * f64::from(input.haemoptysis)),
+    );
+    working.insert(
+        "malignancy".into(),
+        json!(1.0 * f64::from(input.malignancy)),
+    );
     working.insert("total_score".into(), json!(o.score));
     working.insert("two_tier".into(), json!(o.two_tier.slug()));
     working.insert("three_tier".into(), json!(o.three_tier.slug()));
@@ -321,8 +341,8 @@ impl Calculator for WellsPe {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: WellsPeInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: WellsPeInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }

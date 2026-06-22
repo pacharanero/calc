@@ -17,7 +17,7 @@
 //! diagnosis" item is a clinical gestalt rather than a tick-box finding.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -27,8 +27,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "wells_dvt";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Wells PS, Anderson DR, Rodger M, et al. Evaluation of D-dimer in the diagnosis of suspected \
+pub const REFERENCE: &str = "Wells PS, Anderson DR, Rodger M, et al. Evaluation of D-dimer in the diagnosis of suspected \
 deep-vein thrombosis. N Engl J Med. 2003;349(13):1227-1235. Two-level interpretation per NICE \
 NG158.";
 
@@ -160,7 +159,10 @@ pub fn build_response(input: &WellsDvtInput) -> Result<CalculationResponse, Calc
         "calf_swelling_over_3cm".into(),
         json!(i8::from(input.calf_swelling_over_3cm)),
     );
-    working.insert("pitting_oedema".into(), json!(i8::from(input.pitting_oedema)));
+    working.insert(
+        "pitting_oedema".into(),
+        json!(i8::from(input.pitting_oedema)),
+    );
     working.insert(
         "collateral_superficial_veins".into(),
         json!(i8::from(input.collateral_superficial_veins)),
@@ -330,8 +332,8 @@ impl Calculator for WellsDvt {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: WellsDvtInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: WellsDvtInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -483,8 +485,18 @@ mod tests {
     fn calf_definition_keeps_landmark_and_threshold() {
         let schema = WellsDvt.input_schema();
         let def = &schema["properties"]["calf_swelling_over_3cm"]["definition"];
-        assert!(def["statement"].as_str().unwrap().contains("10 cm below the tibial tuberosity"));
-        assert!(def["caveats"].as_str().unwrap().contains("strictly greater than 3 cm"));
+        assert!(
+            def["statement"]
+                .as_str()
+                .unwrap()
+                .contains("10 cm below the tibial tuberosity")
+        );
+        assert!(
+            def["caveats"]
+                .as_str()
+                .unwrap()
+                .contains("strictly greater than 3 cm")
+        );
     }
 
     #[test]

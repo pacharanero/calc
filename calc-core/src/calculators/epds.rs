@@ -19,7 +19,7 @@
 //! the input schema so this contract is explicit.
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -37,8 +37,7 @@ pub const LICENSE: CalculatorLicense = CalculatorLicense {
 };
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Cox JL, Holden JM, Sagovsky R. Detection of postnatal depression: development of the \
+pub const REFERENCE: &str = "Cox JL, Holden JM, Sagovsky R. Detection of postnatal depression: development of the \
 10-item Edinburgh Postnatal Depression Scale. Br J Psychiatry. 1987;150:782-786. \
 doi:10.1192/bjp.150.6.782";
 
@@ -251,8 +250,8 @@ impl Calculator for Epds {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: EpdsInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: EpdsInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
@@ -262,7 +261,9 @@ mod tests {
     use super::*;
 
     fn responses(v: [u8; 10]) -> EpdsInput {
-        EpdsInput { responses: v.to_vec() }
+        EpdsInput {
+            responses: v.to_vec(),
+        }
     }
 
     #[test]
@@ -311,12 +312,24 @@ mod tests {
 
     #[test]
     fn wrong_length_and_range_are_rejected() {
-        assert!(compute(&EpdsInput { responses: vec![0; 9] }).is_err());
-        assert!(compute(&EpdsInput { responses: vec![0; 11] }).is_err());
-        assert!(compute(&EpdsInput {
-            responses: vec![4, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        })
-        .is_err());
+        assert!(
+            compute(&EpdsInput {
+                responses: vec![0; 9]
+            })
+            .is_err()
+        );
+        assert!(
+            compute(&EpdsInput {
+                responses: vec![0; 11]
+            })
+            .is_err()
+        );
+        assert!(
+            compute(&EpdsInput {
+                responses: vec![4, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            })
+            .is_err()
+        );
     }
 
     #[test]
@@ -334,10 +347,12 @@ mod tests {
     fn schema_carries_input_definition() {
         let schema = Epds.input_schema();
         let def = &schema["properties"]["responses"]["definition"];
-        assert!(def["excludes"][0]
-            .as_str()
-            .unwrap()
-            .contains("NOT the literal answer position"));
+        assert!(
+            def["excludes"][0]
+                .as_str()
+                .unwrap()
+                .contains("NOT the literal answer position")
+        );
         assert_eq!(def["status"], json!("draft"));
     }
 

@@ -24,7 +24,7 @@
 //! in-hospital mortality (low <=108, intermediate 109-140, high >140).
 
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 use crate::calculator::{CalcError, Calculator};
 use crate::license::CalculatorLicense;
@@ -34,8 +34,7 @@ use crate::response::CalculationResponse;
 pub const NAME: &str = "grace";
 
 /// Primary citation.
-pub const REFERENCE: &str =
-    "Granger CB, Goldberg RJ, Dabbous O, et al. Predictors of hospital mortality in the Global \
+pub const REFERENCE: &str = "Granger CB, Goldberg RJ, Dabbous O, et al. Predictors of hospital mortality in the Global \
 Registry of Acute Coronary Events. Arch Intern Med. 2003;163(19):2345-2353. \
 doi:10.1001/archinte.163.19.2345";
 
@@ -247,9 +246,17 @@ pub fn compute(input: &GraceInput) -> Result<GraceOutcome, CalcError> {
     let systolic_bp_points = systolic_bp_points(input.systolic_bp);
     let creatinine_points = creatinine_points(scr_mgdl);
     let killip_points = killip_points(input.killip_class)?;
-    let cardiac_arrest_points = if input.cardiac_arrest_at_admission { 39 } else { 0 };
+    let cardiac_arrest_points = if input.cardiac_arrest_at_admission {
+        39
+    } else {
+        0
+    };
     let st_deviation_points = if input.st_segment_deviation { 28 } else { 0 };
-    let cardiac_enzymes_points = if input.elevated_cardiac_enzymes { 14 } else { 0 };
+    let cardiac_enzymes_points = if input.elevated_cardiac_enzymes {
+        14
+    } else {
+        0
+    };
 
     let total = age_points
         + heart_rate_points
@@ -297,11 +304,20 @@ pub fn build_response(input: &GraceInput) -> Result<CalculationResponse, CalcErr
     working.insert("systolic_bp_points".into(), json!(o.systolic_bp_points));
     working.insert("creatinine_points".into(), json!(o.creatinine_points));
     working.insert("killip_points".into(), json!(o.killip_points));
-    working.insert("cardiac_arrest_points".into(), json!(o.cardiac_arrest_points));
+    working.insert(
+        "cardiac_arrest_points".into(),
+        json!(o.cardiac_arrest_points),
+    );
     working.insert("st_deviation_points".into(), json!(o.st_deviation_points));
-    working.insert("cardiac_enzymes_points".into(), json!(o.cardiac_enzymes_points));
+    working.insert(
+        "cardiac_enzymes_points".into(),
+        json!(o.cardiac_enzymes_points),
+    );
     working.insert("risk_category".into(), json!(o.category.slug()));
-    working.insert("in_hospital_mortality".into(), json!(o.category.mortality()));
+    working.insert(
+        "in_hospital_mortality".into(),
+        json!(o.category.mortality()),
+    );
 
     Ok(CalculationResponse {
         calculator: NAME.to_string(),
@@ -425,8 +441,8 @@ impl Calculator for Grace {
     }
 
     fn calculate(&self, input: &Value) -> Result<CalculationResponse, CalcError> {
-        let parsed: GraceInput =
-            serde_json::from_value(input.clone()).map_err(|e| CalcError::InvalidInput(e.to_string()))?;
+        let parsed: GraceInput = serde_json::from_value(input.clone())
+            .map_err(|e| CalcError::InvalidInput(e.to_string()))?;
         build_response(&parsed)
     }
 }
