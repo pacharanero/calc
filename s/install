@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Install the `calc` binary from this checkout onto your PATH.
+#
+# Builds the calc-cli crate in release mode and installs the resulting `calc`
+# binary into ~/.cargo/bin (or $CARGO_INSTALL_ROOT). --locked uses the
+# committed Cargo.lock so the install is reproducible.
+#
+# Pass any extra `cargo install` flags through, for example:
+#   s/install --force                  # reinstall over an existing copy
+#   s/install --root ~/.local          # install somewhere other than ~/.cargo
+#   s/install --debug                  # faster build, slower runtime
+
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+exec cargo install --locked --path calc-cli "$@"
