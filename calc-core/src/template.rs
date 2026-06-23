@@ -19,12 +19,38 @@ use serde_json::{Map, Value};
 /// Each property becomes a key whose placeholder describes the expected value.
 /// Nested object properties recurse; every other property becomes a hint string
 /// like `"<boolean> Fever in the last 24 hours"` or `"<one of: a|b|c> ..."`.
+///
+/// If the schema declares top-level `oneOf` alternatives (each with its own
+/// `required` array), the template emits only the **first** alternative's
+/// required fields - so the printed object always represents one valid input
+/// path rather than a confusing union of mutually-exclusive fields. The other
+/// alternatives are still discoverable via `calc <name> --schema`.
 pub fn template_from_schema(schema: &Value) -> Value {
     let Some(props) = schema.get("properties").and_then(Value::as_object) else {
         return Value::Object(Map::new());
     };
+
+    // If the schema is a `oneOf` of alternative required-field groups, restrict
+    // the template to the first alternative so it represents one usable path.
+    let allowed_keys: Option<std::collections::BTreeSet<String>> = schema
+        .get("oneOf")
+        .and_then(Value::as_array)
+        .and_then(|alts| alts.first())
+        .and_then(|alt| alt.get("required"))
+        .and_then(Value::as_array)
+        .map(|req| {
+            req.iter()
+                .filter_map(|v| v.as_str().map(str::to_string))
+                .collect()
+        });
+
     let mut out = Map::new();
     for (key, prop) in props {
+        if let Some(allowed) = &allowed_keys
+            && !allowed.contains(key)
+        {
+            continue;
+        }
         out.insert(key.clone(), placeholder(prop));
     }
     Value::Object(out)
@@ -49,10 +75,17 @@ fn placeholder(prop: &Value) -> Value {
 }
 
 fn type_hint(prop: &Value) -> String {
-    // Enumerated values take priority - they are the most useful hint.
+    // Enumerated values take priority - they are the most useful hint. For
+    // string enums the variants are unambiguous; for integer / number enums
+    // we lead with the JSON type so the reader knows to write `1` not `"1"`.
     if let Some(values) = prop.get("enum").and_then(Value::as_array) {
         let opts: Vec<String> = values.iter().map(render_scalar).collect();
-        return format!("one of: {}", opts.join("|"));
+        let joined = opts.join("|");
+        return match prop.get("type").and_then(Value::as_str) {
+            Some("integer") => format!("integer, one of: {joined}"),
+            Some("number") => format!("number, one of: {joined}"),
+            _ => format!("one of: {joined}"),
+        };
     }
     match prop.get("type").and_then(Value::as_str) {
         Some("boolean") => "boolean".to_string(),
@@ -151,5 +184,64 @@ mod tests {
     #[test]
     fn no_properties_yields_empty_object() {
         assert_eq!(template_from_schema(&json!({"type": "object"})), json!({}));
+    }
+
+    #[test]
+    fn integer_enums_lead_with_the_json_type() {
+        // Regression: previously rendered as `<one of: 1|2|3|4>`, which a
+        // reader would naturally fill in as a quoted string and break.
+        let schema = json!({
+            "type": "object",
+            "properties": {
+                "killip_class": {
+                    "type": "integer",
+                    "enum": [1, 2, 3, 4],
+                    "description": "Killip class on admission (1-4)"
+                }
+            }
+        });
+        let t = template_from_schema(&schema);
+        assert_eq!(
+            t["killip_class"],
+            json!("<integer, one of: 1|2|3|4> Killip class on admission (1-4)")
+        );
+    }
+
+    #[test]
+    fn number_enums_lead_with_the_json_type() {
+        let schema = json!({
+            "type": "object",
+            "properties": {
+                "dose": { "type": "number", "enum": [0.5, 1.0, 2.0] }
+            }
+        });
+        let t = template_from_schema(&schema);
+        assert_eq!(t["dose"], json!("<number, one of: 0.5|1.0|2.0>"));
+    }
+
+    #[test]
+    fn one_of_alternatives_emit_only_the_first_alternative() {
+        // Regression: the uACR schema declares `acr+acr_unit` OR
+        // `albumin+creatinine` via top-level `oneOf`. The template used to
+        // emit all four fields, which fails the "exactly one" check.
+        let schema = json!({
+            "type": "object",
+            "properties": {
+                "acr": { "type": "number" },
+                "acr_unit": { "type": "string", "enum": ["mg/mmol", "mg/g"] },
+                "albumin": { "type": "number" },
+                "creatinine": { "type": "number" }
+            },
+            "oneOf": [
+                { "required": ["acr", "acr_unit"] },
+                { "required": ["albumin", "creatinine"] }
+            ]
+        });
+        let t = template_from_schema(&schema);
+        let obj = t.as_object().unwrap();
+        assert!(obj.contains_key("acr"));
+        assert!(obj.contains_key("acr_unit"));
+        assert!(!obj.contains_key("albumin"));
+        assert!(!obj.contains_key("creatinine"));
     }
 }

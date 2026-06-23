@@ -116,7 +116,14 @@ pub fn run(cmd: CalcCommand) -> Result<()> {
     match cmd.input.as_deref() {
         // No input: print a fillable template and explain how to pass it back.
         None => {
+            let schema = calc.input_schema();
             println!("{}", serde_json::to_string_pretty(&calc.input_template())?);
+            // If the schema has `oneOf` alternatives, the template shows only
+            // the first - flag the others so they're discoverable without
+            // having to read the full schema.
+            if let Some(note) = oneof_alternatives_note(&schema) {
+                eprintln!("\n{note}");
+            }
             eprintln!(
                 "\nReplace each placeholder with a value, then compute with one of:\n  \
                  calc {name} --input <file.json>\n  \
@@ -213,5 +220,64 @@ fn value_to_string(v: &serde_json::Value) -> String {
     match v {
         serde_json::Value::String(s) => s.clone(),
         other => other.to_string(),
+    }
+}
+
+/// If the schema declares top-level `oneOf` alternative input shapes (each
+/// with its own `required` array), build a one-paragraph note listing them.
+///
+/// The template printed by `calc <name>` shows only the first alternative;
+/// this note tells the reader what else is permitted, so they don't have to
+/// read the full schema to discover the other shapes.
+fn oneof_alternatives_note(schema: &serde_json::Value) -> Option<String> {
+    let alts = schema.get("oneOf")?.as_array()?;
+    let groups: Vec<Vec<String>> = alts
+        .iter()
+        .filter_map(|alt| {
+            alt.get("required").and_then(|r| r.as_array()).map(|r| {
+                r.iter()
+                    .filter_map(|v| v.as_str().map(str::to_string))
+                    .collect()
+            })
+        })
+        .filter(|g: &Vec<String>| !g.is_empty())
+        .collect();
+
+    if groups.len() < 2 {
+        return None;
+    }
+
+    let mut out =
+        String::from("This calculator accepts more than one input shape. Pick exactly one:\n");
+    for (i, g) in groups.iter().enumerate() {
+        let marker = if i == 0 { "shown above" } else { "alternative" };
+        out.push_str(&format!("  {}: {}    ({marker})\n", i + 1, g.join(" + ")));
+    }
+    Some(out.trim_end().to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::oneof_alternatives_note;
+    use serde_json::json;
+
+    #[test]
+    fn oneof_note_lists_each_alternative() {
+        let schema = json!({
+            "type": "object",
+            "oneOf": [
+                { "required": ["acr", "acr_unit"] },
+                { "required": ["albumin", "creatinine"] }
+            ]
+        });
+        let note = oneof_alternatives_note(&schema).unwrap();
+        assert!(note.contains("acr + acr_unit"));
+        assert!(note.contains("albumin + creatinine"));
+        assert!(note.contains("shown above"));
+    }
+
+    #[test]
+    fn no_oneof_yields_no_note() {
+        assert!(oneof_alternatives_note(&json!({"type": "object"})).is_none());
     }
 }
