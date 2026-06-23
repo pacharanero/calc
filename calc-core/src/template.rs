@@ -1,6 +1,9 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! Fillable input templates derived from a calculator's JSON Schema.
 //!
-//! `gitehr calc <name>` (with no `--input`) prints one of these: a JSON object
+//! `calc <name>` (with no `--input`) prints one of these: a JSON object
 //! with every input key present and a placeholder value describing the expected
 //! type, allowed values, and meaning. A human or an LLM fills in the values and
 //! passes the object straight back via `--input`, so the template's shape is by

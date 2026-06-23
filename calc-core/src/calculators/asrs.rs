@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! ASRS-v1.1 — Adult ADHD Self-Report Scale screener.
 //!
 //! 18-item WHO-validated screener. Part A (items 1–6) is the validated screen;

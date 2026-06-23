@@ -1,15 +1,19 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! # calc-core
 //!
-//! The pure scoring engine behind the GitEHR clinical calculators.
+//! The pure scoring engine behind the open clinical calculators.
 //!
 //! This crate is deliberately a **leaf**: it depends only on `serde` and
-//! `serde_json`, never on the rest of GitEHR and never on an async runtime.
-//! That is what lets the same logic drive four surfaces without divergence:
+//! `serde_json`, never on a host application and never on an async runtime.
+//! That is what lets the same logic drive every surface without divergence:
 //!
-//! - the standalone `calc` binary and the `gitehr calc` subcommand (via `calc-cli`)
-//! - the GitEHR MCP server (each calculator exposed as a tool)
-//! - the GitEHR Tauri GUI (called natively over a Tauri command)
-//! - a separately-distributed desktop/mobile calculator app
+//! - the standalone `calc` binary
+//! - host CLIs that embed `calc-cli` (e.g. GitEHR's `gitehr calc` subcommand)
+//! - an MCP server (each calculator exposed as a tool)
+//! - a native desktop GUI (called natively over a Tauri command)
+//! - the single-file web calculators
 //!
 //! Every calculator implements the [`Calculator`] trait and returns a
 //! [`CalculationResponse`] — the Rust counterpart of the JSON schema the

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! CHA2DS2-VASc - stroke risk in non-valvular atrial fibrillation.
 //!
 //! Guides anticoagulation decisions (NICE NG196). The score is the flagship for

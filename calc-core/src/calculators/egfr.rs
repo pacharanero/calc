@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! eGFR - estimated glomerular filtration rate, CKD-EPI 2021 creatinine equation.
 //!
 //! The race-free 2021 update (Inker et al., NEJM 2021), which removed the Black

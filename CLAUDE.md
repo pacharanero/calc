@@ -1,6 +1,6 @@
 # Agent instructions
 
-This repository is the GitEHR clinical calculators: a pure Rust scoring engine (`calc-core`) and a CLI (`calc-cli`) that drive every surface from one source of truth.
+This repository is `calc`: an open, standalone library of clinical calculators - a pure Rust scoring engine (`calc-core`) and a CLI (`calc-cli`) that drive every surface from one source of truth. It is reusable by anyone with no knowledge of GitEHR; GitEHR is one downstream consumer.
 
 - Read `spec/` for context: `calculators.md` (architecture), `calculator-roadmap.md` (the tool list), and `calculator-input-definitions.md` (the governed input-definition system).
 - `calc-core` is a strict leaf crate: it depends only on `serde` and `serde_json`. Do not add other dependencies to it, and never make it depend on an async runtime or on any host application.

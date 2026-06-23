@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! Gleason score and ISUP/WHO Grade Group for prostate cancer.
 //!
 //! Prostate adenocarcinoma is graded from the two most prevalent architectural

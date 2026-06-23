@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! NEWS2 - National Early Warning Score 2 (RCP, 2017).
 //!
 //! NHS-mandated track-and-trigger aggregate physiology score. Each of seven

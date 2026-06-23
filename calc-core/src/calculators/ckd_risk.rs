@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! KDIGO CKD risk category - the eGFR x uACR "heatmap".
 //!
 //! Combines the CKD G-stage (from eGFR) and the albuminuria A-stage (from uACR

@@ -1,7 +1,10 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! The standalone `calc` binary.
 //!
-//! A thin wrapper over [`calc_cli`]: all behaviour lives in the library so the
-//! `gitehr calc` subcommand can reuse it without repetition.
+//! A thin wrapper over [`calc_cli`]: all behaviour lives in the library so host
+//! CLIs (e.g. GitEHR's `gitehr calc`) can reuse it without repetition.
 
 use clap::Parser;
 

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! NHFS - Nottingham Hip Fracture Score (Maxwell et al. 2008).
 //!
 //! A preoperative score predicting 30-day mortality after hip fracture surgery,

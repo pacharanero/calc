@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! CURB-65 - severity assessment for community-acquired pneumonia.
 //!
 //! Stratifies 30-day mortality risk and guides the place of care (home vs

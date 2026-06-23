@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! GRACE - Global Registry of Acute Coronary Events risk score (Granger 2003).
 //!
 //! Predicts IN-HOSPITAL mortality after an acute coronary syndrome (ACS) from

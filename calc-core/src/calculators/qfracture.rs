@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! QFracture-2012 - 10-year risk of osteoporotic and hip fracture (Hippisley-Cox & Coupland, BMJ 2009/2012).
 //!
 //! The open UK fracture-risk algorithm and the intended open alternative to FRAX

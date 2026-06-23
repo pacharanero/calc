@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! Wells score (DVT) - clinical pre-test probability of deep vein thrombosis.
 //!
 //! Ten clinician-asserted criteria, each worth +1 point except the last

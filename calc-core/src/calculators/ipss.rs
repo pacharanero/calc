@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! IPSS - International Prostate Symptom Score (AUA Symptom Index).
 //!
 //! Seven lower-urinary-tract symptom items, each rated 0-5 over the **last

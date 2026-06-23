@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! PHQ-9 - Patient Health Questionnaire depression severity measure.
 //!
 //! Nine items, each rated 0-3 over the **last two weeks**, summed to a 0-27

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! qSOFA - quick Sequential (Sepsis-related) Organ Failure Assessment.
 //!
 //! A three-item bedside prompt from the Sepsis-3 consensus (Singer et al. JAMA

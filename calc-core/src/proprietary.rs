@@ -1,12 +1,15 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! Proprietary / licence-locked calculators.
 //!
 //! Some clinical tools cannot be shipped openly because their algorithm is a
 //! trade secret (e.g. FRAX) or their content is copyrighted and licence-locked
-//! (e.g. the MMSE). GitEHR refuses to ship a half-right reimplementation or to
-//! quietly omit them. Instead each is registered as a first-class calculator
-//! whose computation returns a structured explanation: that it is proprietary,
-//! who owns it, what open alternatives exist (often one GitEHR already ships),
-//! and what a thwarted clinician can do about it.
+//! (e.g. the MMSE). This project refuses to ship a half-right reimplementation
+//! or to quietly omit them. Instead each is registered as a first-class
+//! calculator whose computation returns a structured explanation: that it is
+//! proprietary, who owns it, what open alternatives exist (often one this
+//! project already ships), and what a thwarted clinician can do about it.
 //!
 //! The point is transparency, not obstruction: a clinician searching for FRAX
 //! finds out exactly why it is not here and where to turn, rather than silence.
@@ -36,8 +39,8 @@ pub struct ProprietaryCalculator {
     pub owner: &'static str,
     /// Why it cannot be shipped (trade-secret algorithm, copyright, etc.).
     pub reason: &'static str,
-    /// Open alternatives a clinician can use instead (machine names of GitEHR
-    /// calculators where one exists, or named external tools).
+    /// Open alternatives a clinician can use instead (machine names of
+    /// calculators shipped here where one exists, or named external tools).
     pub alternatives: &'static [&'static str],
     /// A URL with more information (typically the owner's page).
     pub source_url: &'static str,
@@ -88,7 +91,7 @@ impl Calculator for ProprietaryCalculator {
         working.insert("what_you_can_do".into(), json!(ADVOCACY));
 
         let interpretation = format!(
-            "{title} is not available in GitEHR because it is proprietary or licence-locked. \
+            "{title} is not available here because it is proprietary or licence-locked. \
 Owner: {owner}. {reason} {advocacy}",
             title = self.title,
             owner = self.owner,
@@ -158,7 +161,7 @@ serum biomarkers; the shipped score cannot be reproduced openly.",
         reason: "The CFS is copyrighted by Dalhousie University. Non-commercial use is free but \
 requires a signed permission agreement that forbids changing or commercialising the scale, and an \
 EMR vendor incorporating it into its offering needs a licence. A no-modification, signed-permission \
-agreement is incompatible with shipping the content under GitEHR's open AGPL licence.",
+agreement is incompatible with shipping the content under this project's open AGPL licence.",
         alternatives: &[
             "Electronic Frailty Index (eFI) - open, derived from routine primary-care EHR data",
             "PRISMA-7 (7-item frailty screen)",

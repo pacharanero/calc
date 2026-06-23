@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! UKELD - United Kingdom Model for End-Stage Liver Disease.
 //!
 //! `UKELD = 5.395*ln(INR) + 1.485*ln(creatinine) + 3.13*ln(bilirubin) -

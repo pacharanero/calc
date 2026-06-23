@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! 4AT - rapid assessment test for delirium and cognitive impairment.
 //!
 //! A short (typically <2 minute) bedside screen for delirium, usable by any

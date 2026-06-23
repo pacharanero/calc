@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! Padua Prediction Score - VTE risk in hospitalised medical inpatients.
 //!
 //! An 11-item weighted point score (Barbar et al. J Thromb Haemost 2010) that

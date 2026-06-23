@@ -1,9 +1,13 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! # calc-cli
 //!
-//! The command-line surface for the clinical calculators. This crate is the
-//! single source of CLI behaviour: the standalone `calc` binary (`src/main.rs`)
-//! and the `gitehr calc` subcommand both drive [`CalcCommand`] + [`run`], so
-//! there is nothing to re-implement when embedding it in GitEHR.
+//! The command-line surface for the open clinical calculators. This crate is
+//! the single source of CLI behaviour: the standalone `calc` binary
+//! (`src/main.rs`) and any host CLI that embeds it (e.g. GitEHR's `gitehr calc`)
+//! both drive [`CalcCommand`] + [`run`], so there is nothing to re-implement
+//! when embedding it.
 //!
 //! ## One regular surface for every calculator
 //!
@@ -25,7 +29,7 @@
 //! back. Computing always requires an explicit `--input`, so a bare invocation
 //! never blocks reading stdin.
 //!
-//! To embed in the gitehr CLI:
+//! To embed in a host CLI (e.g. gitehr):
 //!
 //! ```ignore
 //! #[derive(clap::Subcommand)]
@@ -56,7 +60,7 @@ pub enum OutputFormat {
     Json,
 }
 
-/// The `calc` command surface. Reused unchanged by `gitehr calc`.
+/// The `calc` command surface. Reused unchanged by host CLIs such as `gitehr calc`.
 ///
 /// A single shape covers discovery, schema, and compute for every calculator;
 /// the calculator is selected by `name` and looked up in the `calc-core`

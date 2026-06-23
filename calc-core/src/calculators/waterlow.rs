@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! Waterlow Score - pressure ulcer (pressure injury) risk.
 //!
 //! Judy Waterlow's bedside risk-assessment card (1985, revised 2005). The total
@@ -24,8 +27,8 @@
 //!   (the card lists discrete severities, not additive ticks, within a box),
 //!   while the four boxes themselves sum.
 //! - Nutrition: the 2005 card embeds a small malnutrition screen (recent weight
-//!   loss + poor appetite/intake). GitEHR ships the full BAPEN MUST tool only as
-//!   a proprietary stub (BAPEN holds copyright), so this module does NOT
+//!   loss + poor appetite/intake). This project ships the full BAPEN MUST tool
+//!   only as a proprietary stub (BAPEN holds copyright), so this module does NOT
 //!   reproduce MUST. Instead it models the nutrition contribution exactly as the
 //!   Waterlow card itself states it: a weight-loss severity enum plus two
 //!   independent flags ("eating poorly / lack of appetite" and "acutely ill or

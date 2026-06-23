@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! ABCD2 - 2-day stroke risk after a transient ischaemic attack (TIA).
 //!
 //! A 0-7 point score (Johnston et al., Lancet 2007) stratifying early stroke

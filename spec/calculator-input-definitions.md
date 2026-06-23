@@ -57,18 +57,18 @@ The sharp end is the **`excludes`** field. It promotes the silent-failure cases 
 
 The definition travels inside `input_schema()`, as a non-standard `definition` keyword on each property. JSON Schema validators ignore unknown keywords, so validation is unaffected, and the definition reaches every surface for free:
 
-- **CLI** - `gitehr calc <name> --schema` already prints the definitions; a `gitehr calc <name> --define <field>` pretty-printer is a thin convenience on top. The fillable template marks fields that carry a definition.
+- **CLI** - `calc <name> --schema` already prints the definitions; a `calc <name> --define <field>` pretty-printer is a thin convenience on top. The fillable template marks fields that carry a definition.
 - **MCP / LLM** - this is the decisive win. The model already receives `input_schema()` as the tool's `inputSchema`, so the `includes`, `excludes`, and `snomedEcl` are *in the tool contract the model reasons over*. An LLM mapping record data to score inputs sees "VTE does NOT count" at the point of decision, not in documentation it never reads.
 - **Docs** - definition tables are generated from the schema, never hand-maintained.
 - **Web UI** - per-input info popovers, which the Result Card spec already anticipates for clinical guidance.
 
 ## The governed registry: the genuinely novel artifact
 
-Taken together, the definitions form an **open, versioned, peer-reviewed registry of clinical-score input definitions** - something the field lacks. Every definition cites a trusted source and carries a governance status; the SNOMED ECL expressions are reviewed and, where a governed refset does not yet exist, are candidates to become one. This is standards-track work: the reviewed ECL expressions can feed SNOMED International / NHS England refset processes, and the registry is publishable in its own right. It is licensed like the rest of GitEHR's clinical content (CC-BY-SA-4.0).
+Taken together, the definitions form an **open, versioned, peer-reviewed registry of clinical-score input definitions** - something the field lacks. Every definition cites a trusted source and carries a governance status; the SNOMED ECL expressions are reviewed and, where a governed refset does not yet exist, are candidates to become one. This is standards-track work: the reviewed ECL expressions can feed SNOMED International / NHS England refset processes, and the registry is publishable in its own right. It is licensed like the rest of this project's clinical content (CC-BY-SA-4.0).
 
 ## The payoff: defensible LLM auto-population
 
-Definitions are what make automatic input extraction *defensible* rather than merely plausible. With the `snomedEcl` and `excludes` present, an agent populating a score from a GitEHR record can:
+Definitions are what make automatic input extraction *defensible* rather than merely plausible. With the `snomedEcl` and `excludes` present, an agent populating a score from a patient record can:
 
 1. Evaluate each input's ECL against the patient's coded data deterministically, or reason over the narrative with the exclusions explicitly in view.
 2. Emit each TRUE/FALSE **with provenance**: "V = true (SCT 22298006 |Myocardial infarction| matches includes); a recorded PE was excluded per definition."

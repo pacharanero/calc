@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! EPDS - Edinburgh Postnatal Depression Scale.
 //!
 //! Ten items, each rated 0-3 over the **last seven days**, summed to a 0-30

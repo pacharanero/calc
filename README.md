@@ -1,8 +1,8 @@
-# GitEHR Clinical Calculators
+# calc - open clinical calculators
 
-Open, auditable clinical calculators driven by a single Rust engine. One scoring core (`calc-core`) powers every surface - the `calc` command line, an MCP server for LLMs, the GitEHR desktop GUI, and single-file web tools - so a result is identical wherever it is produced.
+Open, auditable clinical calculators driven by a single Rust engine. One scoring core (`calc-core`) powers every surface - the `calc` command line, single-file web tools, a native desktop GUI, and, in host applications, an MCP server for LLMs and EHR integration - so a result is identical wherever it is produced.
 
-This is the home of the calculators that GitEHR uses; they live here so the engine, the web tools, and the docs can focus on calculators and so the `calc` CLI can be installed and used on its own, with no EHR.
+This is a standalone project: the engine, the CLI, the web tools, and the docs focus purely on calculators, and the `calc` CLI installs and runs on its own with no EHR. It is reusable by anyone with no knowledge of GitEHR; GitEHR is one downstream consumer (it depends on these crates, not the other way around).
 
 ## Why
 
@@ -15,7 +15,7 @@ Clinicians need clinical digital tools to provide good care, but the incentives 
 ## Install and use the `calc` CLI
 
 ```bash
-cargo install --git https://github.com/gitehr/tools calc-cli
+cargo install --git https://github.com/pacharanero/calc calc-cli
 ```
 
 There are no per-calculator flags. Every calculator is driven the same way - ask for a template, fill it in, pass it back:
@@ -58,7 +58,7 @@ University of Sheffield ... Open alternatives: qfracture ...
 The dependency arrows all point **into** the core, which never depends on anything above it:
 
 - **`calc-core`** - the pure scoring engine and result schema. A strict leaf crate: depends only on `serde` and `serde_json`, never on an async runtime or any host. This is what makes the calculators detachable and embeddable.
-- **`calc-cli`** - the `calc` binary plus a reusable library (`calc_cli::run`). GitEHR's `gitehr calc` subcommand calls this same library, so nothing is reimplemented.
+- **`calc-cli`** - the `calc` binary plus a reusable library (`calc_cli::run`). A host CLI such as GitEHR's `gitehr calc` subcommand calls this same library, so nothing is reimplemented.
 - **`calc-web`** - single-file HTML calculators with a shared context-detection bridge.
 
 Adding a calculator to `calc_core::all()` surfaces it everywhere - CLI, MCP, web - with no per-surface code.
@@ -67,9 +67,9 @@ Adding a calculator to `calc_core::all()` surfaces it everywhere - CLI, MCP, web
 
 Several inputs are clinician-asserted predicates whose TRUE/FALSE conditions are easy to get subtly wrong (for example, "vascular disease" in CHA2DS2-VASc is arterial and excludes venous thromboembolism). Each such input carries a machine-readable definition - includes, excludes, a cited source, and a draft SNOMED ECL - that travels in the schema to every surface. See `spec/calculator-input-definitions.md`.
 
-## Embedding in GitEHR
+## Embedding in a host (for example, GitEHR)
 
-GitEHR ([gitehr/gitehr](https://github.com/gitehr/gitehr)) consumes these crates: its CLI forwards `gitehr calc` to `calc_cli::run`, and its MCP server exposes each calculator from `calc_core::all()` as a `calc_<name>` tool whose input schema is the calculator's own JSON Schema. The calculators are the engine; GitEHR wires them into its EHR-specific surfaces.
+Any application can embed these crates. GitEHR ([gitehr/gitehr](https://github.com/gitehr/gitehr)) is one consumer: its CLI forwards `gitehr calc` to `calc_cli::run`, and its MCP server exposes each calculator from `calc_core::all()` as a `calc_<name>` tool whose input schema is the calculator's own JSON Schema. The calculators are the engine; a host wires them into its own surfaces.
 
 ## Develop
 

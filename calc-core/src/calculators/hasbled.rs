@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! HAS-BLED - bleeding risk in atrial fibrillation on anticoagulation.
 //!
 //! The bleeding-risk counterpart to CHA2DS2-VASc: the two are weighed together

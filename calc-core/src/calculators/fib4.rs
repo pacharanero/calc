@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! FIB-4 - Fibrosis-4 index for liver fibrosis risk (NAFLD/MASLD).
 //!
 //! `FIB-4 = (age x AST) / (platelets x sqrt(ALT))`, a non-invasive screen for

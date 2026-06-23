@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! BODE Index - multidimensional prognosis in COPD.
 //!
 //! The BODE index (Celli et al., NEJM 2004) predicts ~4-year survival in COPD

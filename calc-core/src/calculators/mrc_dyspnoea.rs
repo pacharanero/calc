@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! MRC Dyspnoea Scale - a five-point grade of breathlessness.
 //!
 //! The Medical Research Council (MRC) breathlessness scale (Fletcher, 1959)

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! QRISK3-2017 - 10-year cardiovascular disease risk (Hippisley-Cox et al., BMJ 2017).
 //!
 //! The UK standard for primary cardiovascular risk assessment (NICE NG238): the

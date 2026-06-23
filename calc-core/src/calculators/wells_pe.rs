@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 //! Wells score for pulmonary embolism - pretest probability of acute PE.
 //!
 //! Stratifies a patient with suspected PE so that low-risk patients can be
