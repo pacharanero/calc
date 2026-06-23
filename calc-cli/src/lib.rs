@@ -117,7 +117,19 @@ pub fn run(cmd: CalcCommand) -> Result<()> {
         // No input: print a fillable template and explain how to pass it back.
         None => {
             let schema = calc.input_schema();
-            println!("{}", serde_json::to_string_pretty(&calc.input_template())?);
+            let template = calc.input_template();
+            // A calculator with no inputs (today: every proprietary "unavailable"
+            // stub) has nothing to fill in - printing `{}` and a "fill it in"
+            // hint just hides the real content. Compute it directly so the
+            // user sees the actual response (typically the proprietary
+            // explanation and the open alternative).
+            if template.as_object().is_some_and(serde_json::Map::is_empty) {
+                let response = calc
+                    .calculate(&serde_json::json!({}))
+                    .map_err(|e| anyhow!("{e}"))?;
+                return emit(&response, cmd.format);
+            }
+            println!("{}", serde_json::to_string_pretty(&template)?);
             // If the schema has `oneOf` alternatives, the template shows only
             // the first - flag the others so they're discoverable without
             // having to read the full schema.
