@@ -14,7 +14,7 @@
 #   sudo sysctl fs.inotify.max_user_instances=512
 
 set -euo pipefail
-cd "$(dirname "$0")/.."
+cd "$(git rev-parse --show-toplevel)"
 
 # Prefer the project venv; fall back to a zensical already on PATH.
 if [[ -x .venv/bin/zensical ]]; then
@@ -33,4 +33,11 @@ EOF
   exit 1
 fi
 
-exec "$ZENSICAL" serve "$@"
+# With no arguments, open the browser at http://localhost:8000 automatically -
+# the common case during docs work. Pass any argument(s) to take full control
+# (e.g. `s/docs --dev-addr 0.0.0.0:8000` on a remote / headless machine).
+if [[ $# -eq 0 ]]; then
+  exec "$ZENSICAL" serve --open
+else
+  exec "$ZENSICAL" serve "$@"
+fi
