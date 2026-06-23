@@ -1,0 +1,31 @@
+/*
+ * calc docs palette.
+ *
+ * The header is kept neutral (white / near-black) via the `primary: white` and
+ * `primary: black` palette entries in mkdocs.yml. The brand colour is a clinical
+ * blue applied to links and accents here, carried over from the calc-web
+ * calculators so the docs and the web tools read as one project.
+ *
+ *   --calc-blue        deep, accessible blue for link text on white (~7:1)
+ *   --calc-blue-bright the bright accent already used in calc-web (#41B6E6)
+ *
+ * Light links use the deep blue for contrast; dark-mode links use the bright
+ * blue so they stay legible on the slate background.
+ */
+
+:root {
+  --calc-blue: #005eb8;
+  --calc-blue-bright: #41b6e6;
+  --calc-blue-dark: #003d7a;
+}
+
+[data-md-color-scheme="default"] {
+  --md-accent-fg-color: var(--calc-blue);
+  --md-typeset-a-color: var(--calc-blue);
+}
+
+[data-md-color-scheme="slate"] {
+  /* Lift the blue for comfortable contrast against the slate surface. */
+  --md-accent-fg-color: var(--calc-blue-bright);
+  --md-typeset-a-color: var(--calc-blue-bright);
+}

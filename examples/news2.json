@@ -1,0 +1,10 @@
+{
+  "respiratory_rate": 21,
+  "spo2": 94,
+  "spo2_scale": "1",
+  "on_oxygen": true,
+  "temperature": 38.1,
+  "systolic_bp": 112,
+  "pulse": 95,
+  "consciousness": "alert"
+}

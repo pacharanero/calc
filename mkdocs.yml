@@ -1,0 +1,96 @@
+site_name: calc
+site_description: Open, auditable clinical calculators - one Rust scoring engine behind a simple command line.
+site_url: https://pacharanero.github.io/calc/
+
+repo_url: https://github.com/pacharanero/calc
+repo_name: pacharanero/calc
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+
+theme:
+  name: zensical
+  variant: modern
+  # The header is left neutral (white in light mode, near-black in dark) so the
+  # clinical blue reads as an accent on links and active nav rather than washing
+  # the whole chrome. Exact brand colours live in docs/stylesheets/extra.css.
+  features:
+    - content.code.copy      # copy button on every code block (the headline: copy-paste)
+    - content.code.annotate   # numbered (1) annotations inside code blocks
+    - content.action.edit     # "edit this page" link back to GitHub
+    - content.action.view     # "view source" link back to GitHub
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+
+  palette:
+    # Follows the OS preference until the reader picks a side with the toggle.
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: light-blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: light-blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Install: install.md
+  - Walkthrough: walkthrough.md
+  - CLI reference: cli-reference.md
+  - Calculator catalogue: calculators.md
+  - How it works: how-it-works.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  # Lets the docs embed the committed example inputs verbatim with
+  #   --8<-- "examples/feverpain.json"
+  # so a snippet shown on the page is byte-for-byte the file you pipe in.
+  # base_path is the repo root (where this file lives); check_paths fails the
+  # build loudly if a referenced file goes missing rather than embedding blank.
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+copyright: >-
+  Copyright &copy; 2026 Marcus Baw.
+  Source <a href="https://github.com/pacharanero/calc">pacharanero/calc</a>.

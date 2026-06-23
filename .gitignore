@@ -18,6 +18,15 @@
 *.swo
 .DS_Store
 
+### Docs site (Zensical)
+
+# Local Python venv for building the docs (pip install -r requirements.txt)
+.venv/
+# Built docs output (`zensical build` writes here; deployed from CI, not committed)
+/site/
+__pycache__/
+*.pyc
+
 ### Local agent / session files
 
 .claude/

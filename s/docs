@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+#
+# Serve the calc docs locally with hot-reload at http://localhost:8000.
+#
+# First-time setup (once):
+#   python3 -m venv .venv
+#   ./.venv/bin/pip install -r requirements.txt
+#
+# Then just run `s/docs` from anywhere in the repo.
+#
+# Linux gotcha: Zensical's file watcher consumes an inotify instance, and the
+# per-user cap (fs.inotify.max_user_instances, often 128) is easily saturated by
+# editors and file-syncers. If serve panics with "Too many open files", raise it:
+#   sudo sysctl fs.inotify.max_user_instances=512
+
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+# Prefer the project venv; fall back to a zensical already on PATH.
+if [[ -x .venv/bin/zensical ]]; then
+  ZENSICAL=.venv/bin/zensical
+elif command -v zensical >/dev/null 2>&1; then
+  ZENSICAL=zensical
+else
+  cat >&2 <<'EOF'
+zensical is not installed. Set up the docs venv once:
+
+  python3 -m venv .venv
+  ./.venv/bin/pip install -r requirements.txt
+
+then re-run s/docs.
+EOF
+  exit 1
+fi
+
+exec "$ZENSICAL" serve "$@"
