@@ -3,6 +3,13 @@ members = [
     "calc-core",
     "calc-cli",
 ]
+# The Tauri desktop GUI is excluded from the workspace because Tauri pulls in a
+# very different dependency graph (webkit/webview bindings, tao, wry, etc.)
+# that would slow every `cargo build` for the engine + CLI. It has its own
+# Cargo.lock under `gui/src-tauri/`. Same arrangement as gitehr/.
+exclude = [
+    "gui/src-tauri",
+]
 resolver = "2"
 
 [workspace.package]

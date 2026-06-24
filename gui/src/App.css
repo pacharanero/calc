@@ -1,0 +1,32 @@
+/*
+ * App-level overrides that don't fit cleanly in the Mantine theme.
+ * Most colour / spacing / typography lives in the theme; keep this thin.
+ */
+
+html,
+body,
+#root {
+  height: 100vh;
+  margin: 0;
+  overflow: hidden; /* AppShell scrolls its own regions */
+}
+
+/*
+ * Subtle grain on the brand wordmark so the teal doesn't feel flat
+ * against the chrome.
+ */
+.brand-wordmark {
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+/*
+ * The "soft interoperability" copy-paste preview is the headline UI.
+ * A monospace stack reinforces "this is the literal text that will be
+ * pasted"; the slightly larger line-height keeps it scannable.
+ */
+.clipboard-preview textarea {
+  font-family: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}

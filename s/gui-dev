@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Marcus Baw and Baw Medical Ltd
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Run the calc desktop GUI in dev mode (hot-reload, both Rust and React).
+#
+# First-time setup (once):
+#   cd gui && npm install
+#   # plus the Tauri system deps for your OS; see https://tauri.app/start/prerequisites/
+#
+# Then s/gui-dev from anywhere in the repo. The Tauri CLI starts Vite
+# (port 5173) and the Rust backend together; either side recompiles on
+# save and the webview reloads.
+#
+# Linux gotcha: some distros need WEBKIT_DISABLE_DMABUF_RENDERER=1 to
+# avoid a black/blank webview window. Harmless to set on all distros.
+
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)/gui"
+
+if [[ ! -d node_modules ]]; then
+  cat >&2 <<'EOF'
+gui/node_modules is missing. Run the one-off setup first:
+
+  cd gui && npm install
+
+then re-run s/gui-dev.
+EOF
+  exit 1
+fi
+
+exec env WEBKIT_DISABLE_DMABUF_RENDERER=1 npm run tauri dev -- "$@"
