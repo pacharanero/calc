@@ -1,16 +1,17 @@
 # Calculator catalogue
 
-42 active clinical calculators plus 10 named-but-unavailable (proprietary or licence-locked). Updated automatically from `calc list --format json`.
+The full registry. 42 active calculators that compute a real score, plus 10 named-but-unavailable proprietary stubs (carrying the `proprietary` and `unavailable` tags). One row per calculator, sorted by machine name.
 
-`calc list` prints this same catalogue at any time; `calc <name> --license` prints the algorithm's distribution licence for any single entry; `calc list --tag <tag>` filters by tag.
+`calc list` prints the same data at any time; `calc list --tag <tag>` filters by tag; `calc <name> --license` prints the algorithm's distribution licence for any single entry.
 
 !!! info "Two kinds of entry"
-    - **Active** calculators compute a real score. Their algorithm is either public-domain (implemented from primary literature) or open-source (notably QRISK3 and QFracture, ported from ClinRisk's LGPL-3 source).
-    - **Unavailable** entries are named on purpose. They appear in `calc list`, but invoking them returns a structured explanation - owner, reason, and an open alternative where one exists. See [Unavailable on principle](#unavailable-on-principle).
+    **Active** entries compute a real score. Their algorithm is either public-domain (implemented from primary literature) or open-source (notably QRISK3 and QFracture, ported from ClinRisk's LGPL-3 source).
+
+    **Unavailable** entries (`proprietary` + `unavailable` tags) are named on purpose. They appear in `calc list`, but invoking them returns a structured explanation - owner, reason, and an open alternative where one exists. See [Unavailable on principle](#unavailable-on-principle).
 
 ## Filtering by tag
 
-Every calculator carries one or more **tags** - specialty (where it is used) and status (`proprietary`, `nhs-mandated`, `screening`, `risk`, ...). Tags drive the groupings below, the `--tag` CLI filter, and the JSON output of `calc list`:
+Every calculator carries one or more **tags** - specialty (where it is used) and status (`proprietary`, `nhs-mandated`, `screening`, `risk`, ...). Tags drive the catalogue below, the `--tag` CLI filter, and the JSON output of `calc list`:
 
 ```bash
 calc list --tag cardiology                       # everything in cardiology
@@ -21,87 +22,75 @@ calc --tags                                      # enumerate every tag, with cou
 
 The full vocabulary lives in [`calc-core/src/tags.rs`](https://github.com/pacharanero/calc/blob/main/calc-core/src/tags.rs) and is reviewable in one file. New tags are added there only after at least two calculators want one.
 
-## Primary care / NHS-mandated (high volume)
+## Catalogue
 
-| Name | Title | What it is |
-|---|---|---|
-| `qrisk3` | QRISK3 | 10-year cardiovascular risk (NICE NG238). LGPL port of ClinRisk. |
-| `qfracture` | QFracture | 10-year major osteoporotic and hip fracture risk; the open UK alternative to FRAX. |
-| `phq9` | PHQ-9 | Nine-item depression severity (0-27); item 9 flags self-harm risk. |
-| `gad7` | GAD-7 | Seven-item generalised anxiety severity (0-21); 10+ flags likely GAD. |
-| `audit` | AUDIT | Ten-item WHO alcohol-use screen (0-40) with four risk zones. |
-| `auditc` | AUDIT-C | Three-item AUDIT consumption subscale (0-12). |
-| `egfr` | eGFR (CKD-EPI 2021) | Race-free eGFR from creatinine; reports CKD G-stage. |
-| `fib4` | FIB-4 | Non-invasive screen for advanced liver fibrosis (NICE NG49). |
-| `feverpain` | FeverPAIN | Five-item score guiding antibiotics in acute sore throat. |
-
-## Acute / emergency
-
-| Name | Title | What it is |
-|---|---|---|
-| `news2` | NEWS2 | NHS-mandated aggregate physiology score (RCP 2017). |
-| `curb65` | CURB-65 | Severity and 30-day mortality risk in CAP (BTS / NICE NG138). |
-| `wells_dvt` | Wells Score (DVT) | Pre-test probability of DVT (NICE NG158). |
-| `wells_pe` | Wells Score (PE) | Pre-test probability of PE (NICE NG158). |
-| `grace` | GRACE | In-hospital mortality risk in ACS (Granger 2003). |
-| `heart` | HEART | 6-week MACE risk for ED chest pain. |
-| `timi` | TIMI | 14-day risk in UA/NSTEMI (Antman 2000). |
-| `cha2ds2vasc` | CHA2DS2-VASc | Stroke risk in AF (NICE NG196). |
-| `hasbled` | HAS-BLED | Bleeding risk on anticoagulation (NICE NG196). |
-| `abcd2` | ABCD2 | 2-day stroke risk after TIA. |
-| `qsofa` | qSOFA | Bedside Sepsis-3 prompt. |
-| `sofa` | SOFA | Six-organ dysfunction score (0-24); underpins Sepsis-3. |
-| `fourat` | 4AT | Rapid bedside delirium screen. |
-| `chalice` | CHALICE | Paediatric head-injury CT decision rule (NICE NG232). |
-| `padua` | Padua | VTE risk in medical inpatients (NICE NG89). |
-
-## Chronic disease / specialist
-
-| Name | Title | What it is |
-|---|---|---|
-| `mrc_dyspnoea` | MRC Dyspnoea | Classic 1-5 breathlessness grade. |
-| `ipss` | IPSS | International Prostate Symptom Score. |
-| `das28` | DAS28 | Rheumatoid arthritis disease activity. |
-| `uacr` | uACR | Urine albumin-to-creatinine ratio + KDIGO A-stage. |
-| `ckd_risk` | KDIGO CKD risk | Combines eGFR G-stage and ACR A-stage into the KDIGO heatmap. |
-| `epds` | EPDS | Edinburgh Postnatal Depression Scale. |
-| `amts` | AMTS | Ten-item bedside cognitive screen. |
-| `bode` | BODE | COPD prognostic index. |
-| `child_pugh` | Child-Pugh | Cirrhosis severity class A/B/C. |
-| `meld` | MELD | 3-month mortality in end-stage liver disease (Kamath 2001). |
-| `ukeld` | UKELD | UK liver-transplant listing score (Barber 2011). |
-| `nhfs` | Nottingham Hip Fracture Score | Preoperative 30-day mortality after hip-fracture surgery. |
-| `euroscore2` | EuroSCORE II | Operative mortality after cardiac surgery (Nashef 2012). |
-| `gleason` | Gleason Grade Group | ISUP/WHO grade group from prostate biopsy patterns. |
-| `npi` | Nottingham Prognostic Index | Prognosis in primary operable breast cancer. |
-| `abpi` | ABPI | Ankle-Brachial Pressure Index, per leg. |
-| `waterlow` | Waterlow | Pressure-ulcer risk assessment. |
-| `asrs` | ASRS-v1.1 | WHO-validated adult ADHD screener. |
+| Name | Title | What it does | Tags |
+|---|---|---|---|
+| `abcd2` | ABCD2 Score (Stroke Risk after TIA) | 2-day stroke risk after a transient ischaemic attack. Note NICE NG128 advises against using ABCD2 to guide referral urgency. | `neurology`, `emergency`, `risk` |
+| `abpi` | ABPI (Ankle-Brachial Pressure Index) | Ankle-Brachial Pressure Index per leg from ankle and brachial systolic pressures; screens for peripheral arterial disease and informs compression-therapy safety. | `primary-care`, `vascular` |
+| `acq` | ACQ (Asthma Control Questionnaire) | Asthma control monitoring (BTS/NICE/SIGN asthma). | `respiratory`, `severity`, `proprietary`, `unavailable` |
+| `amts` | Abbreviated Mental Test Score (AMTS) | Ten-item bedside cognitive screen (0-10); a score below 8 suggests cognitive impairment. | `primary-care`, `geriatrics`, `neurology`, `screening` |
+| `asrs` | ASRS-v1.1 Adult ADHD Screener | 18-item WHO-validated screener for adult ADHD; Part A (items 1–6) is the validated screen. | `primary-care`, `mental-health`, `screening` |
+| `audit` | AUDIT Alcohol Use Screen | Ten-item WHO alcohol-use screen (0-40); four risk zones from low risk to possible dependence. | `primary-care`, `mental-health`, `screening` |
+| `auditc` | AUDIT-C Alcohol Consumption Screen | Three-item WHO AUDIT consumption subscale (0-12); positive at 4+ (men) or 3+ (women). | `primary-care`, `mental-health`, `screening` |
+| `bode` | BODE Index (COPD prognosis) | Multidimensional prognostic index in COPD from BMI, FEV1, mMRC dyspnoea, and six-minute walk distance; predicts ~4-year survival. | `respiratory`, `prognostic` |
+| `cat` | CAT (COPD Assessment Test) | Symptom-burden / health-status measure in COPD (8 items, 0-40; GOLD/NICE NG115). | `respiratory`, `severity`, `proprietary`, `unavailable` |
+| `cfs` | CFS (Clinical Frailty Scale) | 9-point judgement-based frailty grading in older adults (1 Very Fit to 9 Terminally Ill). | `geriatrics`, `severity`, `proprietary`, `unavailable` |
+| `cha2ds2vasc` | CHA2DS2-VASc Stroke Risk (AF) | Stroke risk in non-valvular atrial fibrillation, guiding anticoagulation (NICE NG196). | `cardiology`, `risk` |
+| `chalice` | CHALICE Paediatric Head Injury Rule | Decision rule for CT head in children after head injury: any positive criterion predicts a clinically significant intracranial injury and a CT head scan is recommended (Dunning et al 2006; NICE NG232). | `paediatrics`, `emergency` |
+| `child_pugh` | Child-Pugh Score (Cirrhosis Severity) | Severity of chronic liver disease from bilirubin, albumin, INR, ascites, and encephalopathy; reports class A/B/C. | `hepatology`, `severity` |
+| `ckd_risk` | KDIGO CKD risk category (eGFR x ACR heatmap) | Combines the eGFR G-stage and albuminuria A-stage into the KDIGO prognosis risk category (the green/yellow/orange/red heatmap). | `primary-care`, `nephrology`, `risk` |
+| `curb65` | CURB-65 Pneumonia Severity | Severity and 30-day mortality risk in community-acquired pneumonia, guiding place of care (BTS / NICE NG138). | `acute-medicine`, `respiratory`, `infectious-diseases`, `severity` |
+| `das28` | DAS28 (Rheumatoid Arthritis Disease Activity) | Disease Activity Score in 28 joints for rheumatoid arthritis, from tender/swollen joint counts, an ESR or CRP marker, and patient global health. | `rheumatology`, `severity` |
+| `egfr` | eGFR (CKD-EPI 2021) | Estimated glomerular filtration rate from creatinine (race-free CKD-EPI 2021); reports CKD G-stage. | `primary-care`, `nephrology` |
+| `elf` | ELF (Enhanced Liver Fibrosis test) | Second-line serum biomarker test for liver fibrosis (NICE NG49). | `hepatology`, `screening`, `proprietary`, `unavailable` |
+| `epds` | Edinburgh Postnatal Depression Scale (EPDS) | Ten-item perinatal depression screen (0-30); >=10 possible, >=13 probable; item 10 flags self-harm risk. | `primary-care`, `mental-health`, `perinatal`, `screening` |
+| `euroscore2` | EuroSCORE II (Cardiac Surgery Mortality) | Predicted operative mortality after cardiac surgery from 18 preoperative factors (Nashef 2012). | `cardiology`, `surgery`, `prognostic` |
+| `feverpain` | FeverPAIN Score | Five-item score guiding antibiotic prescribing in acute sore throat (validated for adults and children aged 3+). | `primary-care`, `infectious-diseases`, `respiratory` |
+| `fib4` | FIB-4 Liver Fibrosis Index | Non-invasive screen for advanced liver fibrosis from age, AST, ALT, and platelets (NICE NG49). | `primary-care`, `hepatology`, `screening` |
+| `fourat` | 4AT Rapid Delirium Screening | Rapid bedside screen for delirium and cognitive impairment (four items, score 0-12). | `acute-medicine`, `geriatrics`, `neurology`, `screening` |
+| `frax` | FRAX (10-year fracture risk) | 10-year probability of osteoporotic and hip fracture (NICE CG146). | `endocrinology`, `musculoskeletal`, `risk`, `proprietary`, `unavailable` |
+| `gad7` | GAD-7 Anxiety Severity | Seven-item generalised anxiety severity score (0-21); a total of 10+ flags likely GAD. | `primary-care`, `mental-health`, `screening` |
+| `gleason` | Gleason Grade Group (ISUP/WHO) | Gleason score and ISUP/WHO Grade Group (1-5) from the primary and secondary prostate cancer patterns. | `oncology`, `urology` |
+| `grace` | GRACE ACS Risk Score (in-hospital mortality) | Point-based GRACE 1.0 score (Granger 2003) estimating in-hospital mortality risk in acute coronary syndrome. | `cardiology`, `acute-medicine`, `prognostic` |
+| `hasbled` | HAS-BLED Bleeding Risk (AF) | Bleeding risk in atrial fibrillation on anticoagulation, used alongside CHA2DS2-VASc (NICE NG196). | `cardiology`, `risk` |
+| `heart` | HEART Score (ED Chest Pain) | 6-week MACE risk for emergency department chest pain, guiding discharge versus admission versus early invasive management (Six AJ et al. 2008). | `cardiology`, `emergency`, `risk` |
+| `ipss` | IPSS - International Prostate Symptom Score | Seven-item lower urinary tract symptom score (0-35) for benign prostatic hyperplasia; bands mild 0-7, moderate 8-19, severe 20-35, with an optional quality-of-life item (0-6). | `urology`, `severity` |
+| `lanss` | LANSS (Leeds Assessment of Neuropathic Symptoms and Signs) | Screening for pain of predominantly neuropathic origin (7 items, 0-24; >=12 likely neuropathic). | `neurology`, `screening`, `proprietary`, `unavailable` |
+| `meld` | MELD Score (original, 2001) | Model for End-Stage Liver Disease: 3-month mortality risk from bilirubin, INR, and creatinine (Kamath 2001). | `hepatology`, `prognostic` |
+| `mmse` | MMSE (Mini-Mental State Examination) | Cognitive screening / dementia monitoring (NICE NG97). | `geriatrics`, `neurology`, `mental-health`, `screening`, `proprietary`, `unavailable` |
+| `mrc_dyspnoea` | MRC Dyspnoea Scale | Grades breathlessness-related disability on the classic MRC 1-5 scale (Fletcher 1959; NICE/BTS UK usage). | `primary-care`, `respiratory` |
+| `must` | MUST (Malnutrition Universal Screening Tool) | Malnutrition risk screening (NICE CG32). | `primary-care`, `screening`, `proprietary`, `unavailable` |
+| `news2` | NEWS2 (National Early Warning Score 2) | NHS-mandated aggregate physiology score (RCP 2017) driving the clinical-response band. | `acute-medicine`, `nhs-mandated`, `severity` |
+| `nhfs` | Nottingham Hip Fracture Score (NHFS) | Preoperative score (0-10) predicting 30-day mortality after hip fracture surgery. | `surgery`, `geriatrics`, `musculoskeletal`, `prognostic` |
+| `npi` | Nottingham Prognostic Index (NPI) | Prognosis in primary operable breast cancer from invasive tumour size, lymph node stage, and histological grade; reports the prognostic group. | `oncology`, `prognostic` |
+| `ohs` | Oxford Hip Score (OHS) | Patient-reported outcome after hip replacement (NHS England PROMs). | `surgery`, `musculoskeletal`, `proprietary`, `unavailable` |
+| `oks` | Oxford Knee Score (OKS) | Patient-reported outcome after knee replacement (NHS England PROMs). | `surgery`, `musculoskeletal`, `proprietary`, `unavailable` |
+| `padua` | Padua Prediction Score (VTE risk) | VTE risk in hospitalised medical inpatients, guiding thromboprophylaxis (NICE NG89). | `acute-medicine`, `vascular`, `risk` |
+| `phq9` | PHQ-9 Depression Severity | Nine-item depression severity score (0-27) with standard bands; item 9 flags self-harm risk. | `primary-care`, `mental-health`, `screening` |
+| `qfracture` | QFracture (10-year fracture risk) | 10-year risk of major osteoporotic and hip fracture (QFracture-2012), the open UK alternative to FRAX (NICE CG146/NG6). | `primary-care`, `endocrinology`, `risk` |
+| `qrisk3` | QRISK3 (10-year cardiovascular risk) | 10-year risk of heart attack or stroke (QRISK3-2017), the UK standard for primary CVD risk assessment (NICE NG238). | `primary-care`, `cardiology`, `risk` |
+| `qsofa` | qSOFA Score (Sepsis-3) | Quick bedside prompt flagging suspected-infection patients at higher risk of poor outcome (Sepsis-3). A prognostic prompt, not a diagnosis of sepsis. | `acute-medicine`, `intensive-care`, `screening` |
+| `sofa` | SOFA Score (Sequential Organ Failure Assessment) | Grades dysfunction across six organ systems (0-24); underpins the Sepsis-3 definition (rise >= 2 from baseline). | `intensive-care`, `severity` |
+| `timi` | TIMI Risk Score for UA/NSTEMI | 14-day risk of death, MI, or urgent revascularisation in unstable angina / NSTEMI (Antman et al, JAMA 2000). Not the STEMI score. | `cardiology`, `acute-medicine`, `risk` |
+| `uacr` | uACR (urine albumin-to-creatinine ratio) | Urine albumin-to-creatinine ratio from a measured ratio or raw albumin/creatinine; reports the KDIGO albuminuria category (A1-A3). | `primary-care`, `nephrology` |
+| `ukeld` | UKELD (UK Model for End-Stage Liver Disease) | UK liver-transplant listing score from INR, creatinine, bilirubin, and sodium (Barber 2011); 49 is the listing threshold. | `hepatology`, `prognostic` |
+| `waterlow` | Waterlow Score (Pressure Ulcer Risk) | Bedside pressure-ulcer (pressure-injury) risk assessment: summed weighted categories (10+ at risk, 15+ high, 20+ very high). | `acute-medicine`, `geriatrics`, `screening` |
+| `wells_dvt` | Wells Score (DVT) | Clinical pre-test probability of deep vein thrombosis, guiding ultrasound vs D-dimer (NICE NG158). | `emergency`, `vascular` |
+| `wells_pe` | Wells Score for Pulmonary Embolism | Pretest probability of pulmonary embolism, guiding D-dimer vs CTPA (NICE NG158). | `emergency`, `respiratory`, `vascular` |
 
 ## Unavailable on principle
 
-These are listed - and therefore discoverable, schemable, and embeddable in a host - but invoking them returns a structured "unavailable" response, never a score. Where an open alternative exists in this catalogue, it is named in the response.
-
-| Name | Reason in brief | Open alternative |
-|---|---|---|
-| `frax` | Trade secret; country coefficients never published. | `qfracture` |
-| `mmse` | Copyrighted; commercial licensing since 2001. | `amts`, `fourat` |
-| `must` | NICE-recommended but proprietary scoring tables. | - |
-| `cat` | Copyrighted by GSK; restricted-use licence. | - |
-| `acq` | Copyrighted by Elizabeth Juniper; per-use fees. | - |
-| `elf` | Proprietary Siemens Healthineers assay. | `fib4` |
-| `cfs` | Copyrighted; commercial use restricted. | - |
-| `lanss` | Copyrighted; permission required. | - |
-| `ohs` | Isis Innovation licence (commercial use). | - |
-| `oks` | Isis Innovation licence (commercial use). | - |
-
-Calling any of them produces a uniform response so a host can render the gap consistently:
+A handful of widely-used clinical tools are licence-locked or proprietary. They are tagged `proprietary` + `unavailable` in the table above. Invoking any of them returns a structured "unavailable" response, never a score:
 
 ```console
 $ calc frax --input '{}'
 frax = unavailable: proprietary
-...
+
+FRAX (10-year fracture risk) is not available here because it is proprietary or licence-locked. Owner: University of Sheffield (Centre for Metabolic Bone Diseases). The FRAX algorithm and its country-specific coefficients are a trade secret and have never been published, so it cannot be reimplemented from primary literature. ...
 ```
+
+The point is to make the *gap* a first-class object. Where an open alternative exists in this catalogue, it is named in the response (e.g. `qfracture` for FRAX, `amts` and `fourat` for MMSE).
 
 See [Why some calculators are unavailable](how-it-works.md#unavailable-on-principle) for the rationale.
 
@@ -111,52 +100,40 @@ Calculators below are clinically valuable and on the radar but not yet implement
 
 Contributions welcome. The shape of the work is documented in [How it works](how-it-works.md#embedding-calc-in-a-host) and the [build-calculator skill](https://github.com/pacharanero/calc/tree/main/.claude/skills/build-calculator).
 
-### High priority
-
-| Candidate | Specialty | Why |
+| Candidate | What it does | Tentative tags |
 |---|---|---|
-| **GCS** (Glasgow Coma Scale) | neurology, emergency | Universal bedside score; trauma, sedation, neuro obs. |
-| **NIHSS** | neurology, emergency | Acute stroke severity standard. |
-| **Charlson Comorbidity Index** | internal medicine | Most-cited comorbidity index; 10-year mortality. |
-| **APACHE II** | intensive-care | Classic ICU severity / mortality. |
-| **MELD 3.0** | hepatology | Updated MELD (we ship the 2001 original). |
-| **PERC** | emergency | PE rule-out criteria; complements Wells PE. |
-| **Glasgow-Blatchford** | gastroenterology, emergency | Upper-GI bleed pre-endoscopy triage. |
-| **Centor / McIsaac** | primary-care, emergency | Sore-throat triage; complements FeverPAIN. |
-| **ASA Physical Status** | anaesthesia, surgery | Universal pre-op classification. |
-| **NYHA** | cardiology | Heart-failure functional class. |
-| **CHA2DS2-VA** | cardiology | 2024 ESC sex-free update of CHA2DS2-VASc. |
+| **GCS** (Glasgow Coma Scale) | Universal bedside score; trauma, sedation, neuro obs. | `neurology`, `emergency` |
+| **NIHSS** | Acute stroke severity standard. | `neurology`, `emergency`, `severity` |
+| **Charlson Comorbidity Index** | Most-cited comorbidity index; 10-year mortality. | `prognostic` |
+| **APACHE II** | Classic ICU severity / mortality. | `intensive-care`, `severity`, `prognostic` |
+| **MELD 3.0** | Updated MELD (we ship the 2001 original). | `hepatology`, `prognostic` |
+| **PERC** | PE rule-out criteria; complements Wells PE. | `emergency`, `respiratory`, `vascular` |
+| **Glasgow-Blatchford** | Upper-GI bleed pre-endoscopy triage. | `emergency` |
+| **Centor / McIsaac** | Sore-throat triage; complements FeverPAIN. | `primary-care`, `emergency`, `infectious-diseases` |
+| **Alvarado** | Acute appendicitis (MANTRELS). | `emergency`, `surgery` |
+| **ASA Physical Status** | Universal pre-op classification. | `surgery` |
+| **NYHA** | Heart-failure functional class. | `cardiology`, `severity` |
+| **CHA₂DS₂-VA** | 2024 ESC sex-free update of CHA₂DS₂-VASc. | `cardiology`, `risk` |
+| **Albumin-corrected calcium** (Payne 1973) | Adjusts total Ca for albumin. | `endocrinology` |
+| **Hyperglycaemia-corrected sodium** (Katz/Hillier) | Expected Na at normoglycaemia (DKA workup). | `endocrinology`, `acute-medicine` |
+| **Anion gap** | Na − (Cl + HCO₃); screens for HAGMA. | `nephrology`, `acute-medicine` |
+| **FENa** | Separates prerenal from intrinsic AKI. | `nephrology` |
+| **PSA density** | PSA / prostate volume; grey-zone PSA. | `urology`, `oncology` |
+| **Harris-Benedict** (Roza 1984) | BMR / daily energy estimate. | `endocrinology` |
+| **Braden Scale**, **Norton Scale** | Pressure-ulcer risk; complement Waterlow. | `geriatrics`, `screening` |
+| **Barthel Index** | Activities of daily living. | `geriatrics` |
+| **RCRI (Lee)** | Pre-op cardiac risk. | `surgery`, `cardiology`, `risk` |
+| **Caprini** | Peri-op VTE; complements Padua (medical). | `surgery`, `vascular`, `risk` |
+| **Hinchey** | Acute diverticulitis anatomy. | `surgery` |
+| **LRINEC** | Necrotising-fasciitis lab indicator. | `infectious-diseases`, `emergency` |
+| **Pitt Bacteraemia** | BSI severity. | `infectious-diseases`, `severity` |
+| **Modified Duke criteria** | Endocarditis. | `infectious-diseases` |
+| **BASDAI** | Ankylosing spondylitis. | `rheumatology`, `severity` |
+| **PASI**, **SCORAD** | Psoriasis / atopic dermatitis. | `dermatology`, `severity` |
+| **ORBIT**, **EHRA** | Bleeding risk / AF symptoms. | `cardiology` |
+| **SCORE2 / SCORE2-OP** | ESC 2021 CV risk (verify licensing). | `cardiology`, `risk` |
+| **ASCVD Pooled Cohort** | ACC/AHA 2013 (US population). | `cardiology`, `risk` |
+| **FINDRISC** | T2DM risk. | `endocrinology`, `risk` |
+| **RCPCH Digital Growth Charts** | UK-WHO + UK90; z-score / centile / SDS; chart rendering. Needs LMS tables + RCPCH licensing terms. | `paediatrics` |
 
-### Useful clinical helpers (simple one-formula calculators)
-
-| Candidate | What it does |
-|---|---|
-| **Albumin-corrected calcium** (Payne 1973) | Adjusts total Ca for albumin. |
-| **Hyperglycaemia-corrected sodium** (Katz/Hillier) | Expected Na at normoglycaemia (DKA workup). |
-| **Anion gap** | Na − (Cl + HCO₃); screens for HAGMA. |
-| **FENa** | Separates prerenal from intrinsic AKI. |
-| **PSA density** | PSA / prostate volume; grey-zone PSA. |
-| **Harris-Benedict** (Roza 1984) | BMR / daily energy estimate. |
-
-### Specialty depth
-
-| Candidate | Specialty |
-|---|---|
-| **Braden Scale**, **Norton Scale** | geriatrics (pressure-ulcer; we have Waterlow) |
-| **Barthel Index** | geriatrics (ADLs) |
-| **RCRI (Lee)** | surgery (pre-op cardiac risk) |
-| **Caprini** | surgery (peri-op VTE; we have Padua for medical) |
-| **LRINEC** | infectious-diseases (necrotising fasciitis lab indicator) |
-| **Pitt Bacteraemia** | infectious-diseases (BSI severity) |
-| **Modified Duke criteria** | infectious-diseases (endocarditis) |
-| **Hinchey** | surgery (acute diverticulitis anatomy) |
-| **BASDAI** | rheumatology (ankylosing spondylitis) |
-| **PASI**, **SCORAD** | dermatology (psoriasis, atopic dermatitis) |
-| **ORBIT**, **EHRA** | cardiology (bleeding / AF symptoms) |
-| **SCORE2 / SCORE2-OP** | cardiology (ESC 2021 CV risk - check licensing) |
-| **ASCVD Pooled Cohort** | cardiology (ACC/AHA 2013; US population) |
-| **FINDRISC** | endocrinology (T2DM risk) |
-
-### Why this list
-
-Sibling open-source projects approach the same problem from different angles. MedikQuantis ships multilingual (Catalan, Spanish, English) cardiac/ICU/derm/surgery scoring; `calc` is UK-first with NICE-aligned screening, mental-health, perinatal, and "name the unavailable" stubs. Adding the candidates above is mostly mechanical (each is one Rust file plus literature-vector tests) and fills our specialist gaps directly. See [`spec/multilingual.md`](https://github.com/pacharanero/calc/blob/main/spec/multilingual.md) for the multilingual design that would let us ingest their translations directly.
+The multilingual design in [`spec/multilingual.md`](https://github.com/pacharanero/calc/blob/main/spec/multilingual.md) is what makes ingesting MedikQuantis's Catalan and Spanish translations practical when these calculators land.
