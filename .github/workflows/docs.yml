@@ -1,5 +1,15 @@
 # Builds and deploys the calc documentation site to GitHub Pages.
 #
+# Method: artifact-based deploy (actions/upload-pages-artifact +
+# actions/deploy-pages). The built site is handed straight to GitHub's Pages
+# servers as a workflow artifact - there is no `gh-pages` branch, no orphan
+# history, nothing in `git log --all` that did not come from a real commit.
+#
+# Repo prerequisite (one-off): Settings -> Pages -> Source must be set to
+# "GitHub Actions". If it is set to "Deploy from a branch", deploy-pages
+# fails with "Get Pages site failed". This is set once on the repo and
+# persists.
+#
 # Action SHAs are copied from the sibling repos' docs workflows (the canonical
 # living examples) and carry the matching `# vX.Y.Z` comment per house style.
 
@@ -14,7 +24,7 @@ on:
       - "examples/**"
       - "mkdocs.yml"
       - "requirements.txt"
-      - ".github/workflows/deploy-docs-to-ghpages.yml"
+      - ".github/workflows/docs.yml"
   workflow_dispatch:
 
 permissions:
