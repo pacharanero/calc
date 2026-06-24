@@ -11,9 +11,14 @@ docs_dir: docs
 theme:
   name: zensical
   variant: modern
-  # The header is left neutral (white in light mode, near-black in dark) so the
-  # clinical blue reads as an accent on links and active nav rather than washing
-  # the whole chrome. Exact brand colours live in docs/stylesheets/extra.css.
+  # Brand mark is the Material Design `function-variant` glyph (ƒ(x)), shipped
+  # as a single SVG used for both the top-left logo and the favicon. The icon
+  # is `fill="currentColor"`, so docs/stylesheets/extra.css picks the teal per
+  # colour scheme. The header chrome itself is left neutral (white in light,
+  # near-black in dark) so the teal reads as an accent rather than washing the
+  # whole chrome.
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
   features:
     - content.code.copy      # copy button on every code block (the headline: copy-paste)
     - content.code.annotate   # numbered (1) annotations inside code blocks
@@ -35,14 +40,14 @@ theme:
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: white
-      accent: light-blue
+      accent: teal
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: black
-      accent: light-blue
+      accent: teal
       toggle:
         icon: material/brightness-4
         name: Switch to system preference
