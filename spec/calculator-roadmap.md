@@ -78,3 +78,15 @@
 | 48 | Gleason Grade Groups | Prostate cancer aggressiveness | NICE NG131 |
 | 49 | Nottingham Prognostic Index | Breast cancer prognosis | NICE NG101 |
 | 50 | CHALICE Rule | CT head decision in paediatric head injury | NICE CG176 |
+
+---
+
+## Beyond Tier 5: candidates from sibling projects
+
+These are calculators clinically valuable but not on the original UK-first 50-tool list. They originate from [MedikQuantis](https://medikquantis.me) (Laura Piró, Barcelona; MIT licensed), with which a collaboration is being explored. The full table - grouped by clinical priority - lives in [`docs/calculators.md`](../docs/calculators.md#wishlist-candidates-for-future-addition). Headlines:
+
+- **Universally-cited bedside scores not yet shipped**: GCS, NIHSS, Charlson, APACHE II, ASA Physical Status, NYHA, MELD 3.0, CHA2DS2-VA (2024 ESC sex-free), PERC, Glasgow-Blatchford, Centor/McIsaac.
+- **Clinical helpers** (single-formula): albumin-corrected calcium, hyperglycaemia-corrected sodium, anion gap, FENa, PSA density, Harris-Benedict.
+- **Specialty depth**: Braden / Norton / Barthel (geriatrics), RCRI / Caprini / Hinchey (surgery), LRINEC / Pitt / modified Duke (infectious diseases), BASDAI (rheumatology), PASI / SCORAD (dermatology), ORBIT / EHRA (cardiology), SCORE2 / ASCVD (CV risk - non-UK), FINDRISC.
+
+The multilingual design in [`spec/multilingual.md`](multilingual.md) is what makes ingesting MedikQuantis's Catalan and Spanish translations practical when these calculators land.

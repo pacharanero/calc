@@ -48,7 +48,7 @@ use std::path::Path;
 use anyhow::{Result, anyhow};
 use clap::{Args, ValueEnum};
 
-use calc_core::CalculationResponse;
+use calc_core::{CalculationResponse, Calculator};
 
 /// How to render computed results.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, ValueEnum)]
@@ -85,6 +85,19 @@ pub struct CalcCommand {
     #[arg(long)]
     pub license: bool,
 
+    /// Restrict `list` output to calculators that carry this tag (e.g.
+    /// `cardiology`, `proprietary`, `nhs-mandated`). Repeat the flag to
+    /// require ALL of several tags. With no calculator name, this filters the
+    /// catalogue; with a name, it has no effect (the calculator is selected
+    /// by name).
+    #[arg(long, value_name = "TAG")]
+    pub tag: Vec<String>,
+
+    /// Instead of listing calculators, list every tag in the registry (with
+    /// the number of calculators that carry it). Implies `list` mode.
+    #[arg(long)]
+    pub tags: bool,
+
     /// Output format for computed results and `list`.
     #[arg(long, value_enum, default_value_t = OutputFormat::Text)]
     pub format: OutputFormat,
@@ -92,9 +105,14 @@ pub struct CalcCommand {
 
 /// Dispatch a parsed [`CalcCommand`].
 pub fn run(cmd: CalcCommand) -> Result<()> {
-    // No name (or `list`) means: show the catalogue.
+    // `--tags` lists every known tag (with calculator counts) and exits.
+    if cmd.tags {
+        return print_tags(cmd.format);
+    }
+
+    // No name (or `list`) means: show the catalogue (optionally filtered by --tag).
     let name = match cmd.name.as_deref() {
-        None | Some("list") => return print_list(cmd.format),
+        None | Some("list") => return print_list(cmd.format, &cmd.tag),
         Some(n) => n,
     };
 
@@ -174,11 +192,24 @@ fn read_input(src: &str) -> Result<serde_json::Value> {
         .map_err(|e| anyhow!("invalid JSON input: {e}\nSee the expected shape with: calc <name>"))
 }
 
-fn print_list(format: OutputFormat) -> Result<()> {
+fn print_list(format: OutputFormat, required_tags: &[String]) -> Result<()> {
+    // A calculator passes the filter only if it carries every requested tag
+    // (AND semantics, so the filter narrows as more --tag flags are added).
+    let passes = |c: &dyn Calculator| -> bool {
+        if required_tags.is_empty() {
+            return true;
+        }
+        let tags = c.tags();
+        required_tags
+            .iter()
+            .all(|t| tags.contains(&t.as_str()))
+    };
+
     match format {
         OutputFormat::Json => {
             let items: Vec<_> = calc_core::all()
                 .iter()
+                .filter(|c| passes(c.as_ref()))
                 .map(|c| {
                     let lic = c.license();
                     serde_json::json!({
@@ -187,14 +218,48 @@ fn print_list(format: OutputFormat) -> Result<()> {
                         "description": c.description(),
                         "license": lic.license,
                         "license_source": lic.source_url,
+                        "tags": c.tags(),
                     })
                 })
                 .collect();
             println!("{}", serde_json::to_string_pretty(&items)?);
         }
         OutputFormat::Text => {
-            for c in calc_core::all() {
-                println!("{:<12}  {}", c.name(), c.title());
+            for c in calc_core::all().iter().filter(|c| passes(c.as_ref())) {
+                println!(
+                    "{:<12}  {:<48}  [{}]",
+                    c.name(),
+                    c.title(),
+                    c.tags().join(", ")
+                );
+            }
+        }
+    }
+    Ok(())
+}
+
+/// `calc list --tags`: enumerate every tag in the registry with a count.
+fn print_tags(format: OutputFormat) -> Result<()> {
+    use std::collections::BTreeMap;
+
+    let mut counts: BTreeMap<&'static str, usize> = BTreeMap::new();
+    for c in calc_core::all() {
+        for t in c.tags() {
+            *counts.entry(*t).or_insert(0) += 1;
+        }
+    }
+
+    match format {
+        OutputFormat::Json => {
+            let items: Vec<_> = counts
+                .iter()
+                .map(|(t, n)| serde_json::json!({ "tag": t, "count": n }))
+                .collect();
+            println!("{}", serde_json::to_string_pretty(&items)?);
+        }
+        OutputFormat::Text => {
+            for (t, n) in &counts {
+                println!("{:<22}  {:>3}", t, n);
             }
         }
     }

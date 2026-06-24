@@ -70,4 +70,17 @@ pub trait Calculator {
     fn input_template(&self) -> Value {
         crate::template::template_from_schema(&self.input_schema())
     }
+
+    /// Tags categorising this calculator: specialty (where it is used) and
+    /// status (proprietary / unavailable / nhs-mandated / risk / ...).
+    ///
+    /// Used for filtering and grouping in `calc list --tag <t>`, the docs
+    /// catalogue, and any host that enumerates the registry. The default
+    /// implementation looks the calculator up by its machine name in the
+    /// central [`tags::TAGS`](crate::tags::TAGS) table, so the whole taxonomy
+    /// is reviewable in one file; calculators that need to override (e.g. a
+    /// host adds a tag to a calculator it embeds) can implement this directly.
+    fn tags(&self) -> &'static [&'static str] {
+        crate::tags::for_name(self.name())
+    }
 }

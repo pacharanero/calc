@@ -7,10 +7,12 @@ This file (with the matching `CLAUDE.md`, which points here) is the entry point 
 ## Read first
 
 - `spec/calculators.md` - the architecture (one core, many surfaces).
-- `spec/calculator-roadmap.md` - the tool list and build priority.
+- `spec/calculator-roadmap.md` - the tool list, build priority, and post-Tier-5 candidates (MedikQuantis-derived).
 - `spec/calculator-input-definitions.md` - the governed input-definition system for clinician-asserted predicates.
-- `docs/how-it-works.md` - the same architecture phrased for users.
-- `~/code/house-style/AGENTS.md` - the cross-repository engineering standards (CI, distribution, docs, licensing). Source of truth; this file does not duplicate it.
+- `spec/multilingual.md` - design for future multilingual support (English-only today; locale shape agreed).
+- `calc-core/src/tags.rs` - the central tag taxonomy used by `calc list --tag` and the docs catalogue. Add new entries here, not per-calculator.
+- `docs/how-it-works.md` - the architecture phrased for users.
+- `~/code/house-style/AGENTS.md` - the cross-repository engineering standards (CI, distribution, docs, licensing, scripts). Source of truth; this file does not duplicate it.
 
 ## The leaf rule (non-negotiable)
 

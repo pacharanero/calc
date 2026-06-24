@@ -33,12 +33,14 @@ pub mod calculators;
 pub mod license;
 pub mod proprietary;
 pub mod response;
+pub mod tags;
 pub mod template;
 
 pub use calculator::{CalcError, Calculator};
 pub use license::CalculatorLicense;
 pub use proprietary::ProprietaryCalculator;
 pub use response::CalculationResponse;
+pub use tags::{all_tags, for_name as tags_for_name};
 pub use template::template_from_schema;
 
 /// Every calculator known to the engine, in display order.
@@ -125,6 +127,21 @@ mod registry_tests {
                 "{}: license source_url must be a URL, got {:?}",
                 calc.name(),
                 lic.source_url
+            );
+        }
+    }
+
+    /// Policy: every calculator must declare at least one tag, so it is
+    /// discoverable via `calc list --tag <t>` and groupable in the docs.
+    /// The central [`tags::TAGS`](crate::tags::TAGS) table is the canonical
+    /// place to add new entries.
+    #[test]
+    fn every_calculator_has_at_least_one_tag() {
+        for calc in all() {
+            assert!(
+                !calc.tags().is_empty(),
+                "{}: tags() must return at least one tag - add an entry to calc_core::tags::TAGS",
+                calc.name()
             );
         }
     }

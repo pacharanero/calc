@@ -2,11 +2,24 @@
 
 42 active clinical calculators plus 10 named-but-unavailable (proprietary or licence-locked). Updated automatically from `calc list --format json`.
 
-`calc list` prints this same catalogue at any time; `calc <name> --license` prints the algorithm's distribution licence for any single entry.
+`calc list` prints this same catalogue at any time; `calc <name> --license` prints the algorithm's distribution licence for any single entry; `calc list --tag <tag>` filters by tag.
 
 !!! info "Two kinds of entry"
     - **Active** calculators compute a real score. Their algorithm is either public-domain (implemented from primary literature) or open-source (notably QRISK3 and QFracture, ported from ClinRisk's LGPL-3 source).
     - **Unavailable** entries are named on purpose. They appear in `calc list`, but invoking them returns a structured explanation - owner, reason, and an open alternative where one exists. See [Unavailable on principle](#unavailable-on-principle).
+
+## Filtering by tag
+
+Every calculator carries one or more **tags** - specialty (where it is used) and status (`proprietary`, `nhs-mandated`, `screening`, `risk`, ...). Tags drive the groupings below, the `--tag` CLI filter, and the JSON output of `calc list`:
+
+```bash
+calc list --tag cardiology                       # everything in cardiology
+calc list --tag primary-care --tag screening     # AND - narrows the filter
+calc list --tag proprietary                      # the unshippable ones
+calc --tags                                      # enumerate every tag, with counts
+```
+
+The full vocabulary lives in [`calc-core/src/tags.rs`](https://github.com/pacharanero/calc/blob/main/calc-core/src/tags.rs) and is reviewable in one file. New tags are added there only after at least two calculators want one.
 
 ## Primary care / NHS-mandated (high volume)
 
@@ -91,3 +104,59 @@ frax = unavailable: proprietary
 ```
 
 See [Why some calculators are unavailable](how-it-works.md#unavailable-on-principle) for the rationale.
+
+## Wishlist (candidates for future addition)
+
+Calculators below are clinically valuable and on the radar but not yet implemented. Several originate from [MedikQuantis](https://medikquantis.me) (Laura Piró, Barcelona, MIT) - a sibling project we're exploring collaboration with.
+
+Contributions welcome. The shape of the work is documented in [How it works](how-it-works.md#embedding-calc-in-a-host) and the [build-calculator skill](https://github.com/pacharanero/calc/tree/main/.claude/skills/build-calculator).
+
+### High priority
+
+| Candidate | Specialty | Why |
+|---|---|---|
+| **GCS** (Glasgow Coma Scale) | neurology, emergency | Universal bedside score; trauma, sedation, neuro obs. |
+| **NIHSS** | neurology, emergency | Acute stroke severity standard. |
+| **Charlson Comorbidity Index** | internal medicine | Most-cited comorbidity index; 10-year mortality. |
+| **APACHE II** | intensive-care | Classic ICU severity / mortality. |
+| **MELD 3.0** | hepatology | Updated MELD (we ship the 2001 original). |
+| **PERC** | emergency | PE rule-out criteria; complements Wells PE. |
+| **Glasgow-Blatchford** | gastroenterology, emergency | Upper-GI bleed pre-endoscopy triage. |
+| **Centor / McIsaac** | primary-care, emergency | Sore-throat triage; complements FeverPAIN. |
+| **ASA Physical Status** | anaesthesia, surgery | Universal pre-op classification. |
+| **NYHA** | cardiology | Heart-failure functional class. |
+| **CHA2DS2-VA** | cardiology | 2024 ESC sex-free update of CHA2DS2-VASc. |
+
+### Useful clinical helpers (simple one-formula calculators)
+
+| Candidate | What it does |
+|---|---|
+| **Albumin-corrected calcium** (Payne 1973) | Adjusts total Ca for albumin. |
+| **Hyperglycaemia-corrected sodium** (Katz/Hillier) | Expected Na at normoglycaemia (DKA workup). |
+| **Anion gap** | Na − (Cl + HCO₃); screens for HAGMA. |
+| **FENa** | Separates prerenal from intrinsic AKI. |
+| **PSA density** | PSA / prostate volume; grey-zone PSA. |
+| **Harris-Benedict** (Roza 1984) | BMR / daily energy estimate. |
+
+### Specialty depth
+
+| Candidate | Specialty |
+|---|---|
+| **Braden Scale**, **Norton Scale** | geriatrics (pressure-ulcer; we have Waterlow) |
+| **Barthel Index** | geriatrics (ADLs) |
+| **RCRI (Lee)** | surgery (pre-op cardiac risk) |
+| **Caprini** | surgery (peri-op VTE; we have Padua for medical) |
+| **LRINEC** | infectious-diseases (necrotising fasciitis lab indicator) |
+| **Pitt Bacteraemia** | infectious-diseases (BSI severity) |
+| **Modified Duke criteria** | infectious-diseases (endocarditis) |
+| **Hinchey** | surgery (acute diverticulitis anatomy) |
+| **BASDAI** | rheumatology (ankylosing spondylitis) |
+| **PASI**, **SCORAD** | dermatology (psoriasis, atopic dermatitis) |
+| **ORBIT**, **EHRA** | cardiology (bleeding / AF symptoms) |
+| **SCORE2 / SCORE2-OP** | cardiology (ESC 2021 CV risk - check licensing) |
+| **ASCVD Pooled Cohort** | cardiology (ACC/AHA 2013; US population) |
+| **FINDRISC** | endocrinology (T2DM risk) |
+
+### Why this list
+
+Sibling open-source projects approach the same problem from different angles. MedikQuantis ships multilingual (Catalan, Spanish, English) cardiac/ICU/derm/surgery scoring; `calc` is UK-first with NICE-aligned screening, mental-health, perinatal, and "name the unavailable" stubs. Adding the candidates above is mostly mechanical (each is one Rust file plus literature-vector tests) and fills our specialist gaps directly. See [`spec/multilingual.md`](https://github.com/pacharanero/calc/blob/main/spec/multilingual.md) for the multilingual design that would let us ingest their translations directly.
