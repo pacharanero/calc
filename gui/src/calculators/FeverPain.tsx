@@ -228,12 +228,21 @@ export function FeverPainCalculator() {
                   label={c.label}
                   description={c.hint}
                   checked={inputs[c.key]}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    // Read .checked SYNCHRONOUSLY here, before the
+                    // functional setState updater closes over `e`. React
+                    // 19's concurrent renderer can defer the updater
+                    // until after the synthetic event has finished
+                    // propagating, at which point `currentTarget` has
+                    // been nulled out and reading `.checked` throws
+                    // "null is not an object". Capture the boolean now,
+                    // refer to it (not `e`) inside the updater.
+                    const checked = e.currentTarget.checked;
                     setInputs((prev) => ({
                       ...prev,
-                      [c.key]: e.currentTarget.checked,
-                    }))
-                  }
+                      [c.key]: checked,
+                    }));
+                  }}
                 />
               ))}
             </Stack>
