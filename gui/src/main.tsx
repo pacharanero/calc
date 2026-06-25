@@ -8,6 +8,7 @@ import { Notifications } from "@mantine/notifications";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import App from "./App";
+import { ErrorBoundary } from "./ErrorBoundary";
 import "./App.css";
 
 // Theme mirrors the gitehr GUI so the two apps read as one product family:
@@ -27,7 +28,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <MantineProvider theme={theme} defaultColorScheme="auto">
       <Notifications position="top-right" />
-      <App />
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
     </MantineProvider>
   </React.StrictMode>,
 );

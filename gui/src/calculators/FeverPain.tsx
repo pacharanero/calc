@@ -86,26 +86,37 @@ const blankInputs = (): Inputs =>
  * The default clipboard summary. FeverPAIN's `working` map already
  * contains the score, level, prescribing recommendation, and streptococcus
  * isolation band; we lay them out in a way a GP would actually paste.
+ *
+ * Defensive: read every `working` key through a helper that gracefully
+ * handles missing values, so a future calc-core schema change can never
+ * crash this UI - it just renders empty fields.
  */
+function asString(v: unknown): string {
+  if (v === null || v === undefined) return "";
+  if (typeof v === "string") return v;
+  return String(v);
+}
+
 function buildClipboardSummary(r: CalculationResponse, inputs: Inputs): string {
+  const working = r.working ?? {};
   const score = r.result;
-  const rec = String(r.working.prescribing_recommendation ?? "");
-  const strep = String(r.working.streptococcus_rate ?? "");
+  const rec = asString(working.prescribing_recommendation);
+  const strep = asString(working.streptococcus_rate);
   const ticked = CRITERIA.filter((c) => inputs[c.key])
     .map((c) => `- ${c.label}`)
     .join("\n");
 
   return [
-    `FeverPAIN ${score} / 5`,
+    `FeverPAIN ${asString(score)} / 5`,
     "",
-    r.interpretation,
+    r.interpretation ?? "",
     "",
     ticked.length > 0 ? "Positive criteria:\n" + ticked : "No criteria met.",
     "",
-    `Prescribing: ${rec}`,
-    `Streptococcus isolation: ${strep}`,
+    `Prescribing: ${rec || "(not stated)"}`,
+    `Streptococcus isolation: ${strep || "(not stated)"}`,
     "",
-    `Reference: ${r.reference}`,
+    `Reference: ${r.reference ?? ""}`,
   ].join("\n");
 }
 
@@ -140,7 +151,10 @@ export function FeverPainCalculator() {
   }, [inputs]);
 
   const score = response?.result ?? 0;
-  const level = String(response?.working.level ?? "");
+  const working = response?.working ?? {};
+  const level = asString(working.level);
+  const strepRate = asString(working.streptococcus_rate);
+  const prescribing = asString(working.prescribing_recommendation);
 
   // Colour-code the score tile by the FeverPAIN bands (Little 2014):
   //   0-1  no antibiotic, low strep yield   -> green
@@ -276,14 +290,10 @@ export function FeverPainCalculator() {
                   </Text>
                   <Group gap="xs" wrap="wrap">
                     <Badge variant="outline" color="gray">
-                      Strep isolation:{" "}
-                      {String(response.working.streptococcus_rate ?? "—")}
+                      Strep isolation: {strepRate || "—"}
                     </Badge>
                     <Badge variant="outline" color="gray">
-                      Prescribing:{" "}
-                      {String(
-                        response.working.prescribing_recommendation ?? "—",
-                      )}
+                      Prescribing: {prescribing || "—"}
                     </Badge>
                   </Group>
                 </Stack>

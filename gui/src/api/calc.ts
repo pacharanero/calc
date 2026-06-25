@@ -34,12 +34,29 @@ export interface CalculationResponse {
 }
 
 export async function listCalculators(): Promise<CalcSummary[]> {
-  return invoke<CalcSummary[]>("list_calculators");
+  try {
+    return await invoke<CalcSummary[]>("list_calculators");
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error("[calc] list_calculators failed:", err);
+    throw err;
+  }
 }
 
 export async function calculate(
   name: string,
   input: Record<string, unknown>,
 ): Promise<CalculationResponse> {
-  return invoke<CalculationResponse>("calculate", { name, input });
+  try {
+    return await invoke<CalculationResponse>("calculate", { name, input });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `[calc] calculate(${name}) failed; input was:`,
+      input,
+      "error:",
+      err,
+    );
+    throw err;
+  }
 }
