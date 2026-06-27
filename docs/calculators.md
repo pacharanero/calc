@@ -102,6 +102,7 @@ Contributions welcome. The shape of the work is documented in [How it works](how
 
 | Candidate | What it does | Tentative tags |
 |---|---|---|
+| **StatinMD** (Oxford STRATIFY) | Personalised 1/5/10-year risk of serious statin-induced muscle disorders (rhabdomyolysis / hospitalised myopathy) from 22 routinely-recorded factors (Cai et al, *Lancet Digital Health* 2026). Natural pairing with QRISK3: QRISK3 is the benefit side, StatinMD is the harm side. Licensed for **academic use** via Oxford University Innovation - covered while this project is non-commercial. ([source](https://process.innovation.ox.ac.uk/software/p/25396/stratify---stainmd-risk-calculator---academic-use/1)) | `primary-care`, `cardiology`, `risk` |
 | **GCS** (Glasgow Coma Scale) | Universal bedside score; trauma, sedation, neuro obs. | `neurology`, `emergency` |
 | **NIHSS** | Acute stroke severity standard. | `neurology`, `emergency`, `severity` |
 | **Charlson Comorbidity Index** | Most-cited comorbidity index; 10-year mortality. | `prognostic` |

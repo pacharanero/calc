@@ -124,6 +124,7 @@ Calculators worth shipping, under consideration. Largely surfaced from sibling o
 - [ ] **RCRI** (Lee) - Pre-op cardiac risk
 - [ ] **SCORAD** - Atopic dermatitis severity
 - [ ] **SCORE2 / SCORE2-OP** - ESC 2021 CV risk (verify licensing)
+- [ ] **StatinMD** (Oxford STRATIFY) - personalised 1/5/10-year risk of serious statin-induced muscle disorders; natural pairing with QRISK3 (benefit vs harm). Academic licence via Oxford University Innovation (Cai et al, *Lancet Digital Health* 2026; [licence page](https://process.innovation.ox.ac.uk/software/p/25396/stratify---stainmd-risk-calculator---academic-use/1))
 
 ---
 
