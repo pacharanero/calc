@@ -35,6 +35,9 @@ permissions:
 on:
   push:
     branches: [main]
+  # Manual trigger - useful for re-running after the one-off token setup,
+  # or for cutting a release on demand without needing a no-op commit.
+  workflow_dispatch:
 
 jobs:
   # Tag + create the GitHub Release + cargo publish once a Release PR is merged.
