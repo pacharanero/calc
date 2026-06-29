@@ -55,7 +55,6 @@ commit_parsers = [
   { message = "^style", skip = true },
   { message = "^bump", skip = true },
 ]
-filter_commits = false
 sort_commits = "newest"
 
 # ----- per-crate overrides -----
