@@ -17,6 +17,7 @@ The shape of the invocation selects the mode:
 | `calc <name> --schema` | Print the calculator's full **JSON Schema** input contract. |
 | `calc <name> --license` | Print the algorithm's distribution licence and evidence URL. |
 | `calc <name> --input <src>` | **Compute** a result. `<src>` is `-` (stdin), a file path, or an inline JSON string. |
+| `calc completions install` | Install shell completions for the current user. |
 
 Computing always requires an explicit `--input`, so a bare `calc <name>` is pure discovery and will never block waiting on stdin.
 
@@ -71,6 +72,26 @@ calc feverpain --input examples/feverpain.json --format json
 ### `--help`, `--version`
 
 Standard. `--help` describes flags; `--version` prints the workspace version.
+
+## Shell completions
+
+Install completions for your current shell:
+
+```bash
+calc completions install
+```
+
+For package managers or custom locations, generate or write a specific shell's completion script:
+
+```bash
+calc completions bash
+calc completions --dir ~/.local/share/bash-completion/completions bash
+calc completions --dir ~/.zfunc zsh
+calc completions --dir ~/.config/fish/completions fish
+calc completions --dir ~/.config/powershell/completions powershell
+```
+
+The installer detects `$SHELL`, creates the completion directory, writes the correctly named file, and prints any one-time shell configuration still needed.
 
 ## The `CalculationResponse` shape
 
