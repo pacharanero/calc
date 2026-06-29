@@ -18,7 +18,21 @@ use calc_cli::CalcCommand;
 
 /// Open clinical calculators - scoring at the command line.
 #[derive(Debug, Parser)]
-#[command(name = "calc", version, about, long_about = None)]
+#[command(
+    name = "calc",
+    version,
+    about,
+    long_about = None,
+    // Surface the `completions` side-channel in `--help`. It is dispatched
+    // before the main clap parser in `main()` (because `name` is a
+    // positional that would otherwise swallow the word "completions"), so
+    // it is not a clap subcommand and would not appear here otherwise.
+    after_long_help = "Shell completions:\n  \
+        calc completions install                  Install for the current shell\n  \
+        calc completions <bash|zsh|fish|...>      Print to stdout\n  \
+        calc completions --dir <DIR> <SHELL>      Write to a specific dir\n\n\
+See `calc completions --help` and `docs/cli-reference.md` for the full surface."
+)]
 struct Cli {
     #[command(flatten)]
     command: CalcCommand,
