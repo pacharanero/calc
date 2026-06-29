@@ -89,5 +89,4 @@ CI enforces all three. Adding a calculator: implement it in `calc-core` (typed i
 
 ## Roadmap
 
-- Publish `calc-core` and `calc-cli` to crates.io once a distribution pipeline is established, so `cargo install calc-cli` works without `--git`.
-- A focused documentation site for the calculators.
+See [`ROADMAP.md`](ROADMAP.md) for engineering, infrastructure, distribution, GUI, and product-level work, and [`spec/calculator-roadmap.md`](spec/calculator-roadmap.md) for the clinical-calculator backlog.

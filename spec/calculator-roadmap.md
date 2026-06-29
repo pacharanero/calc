@@ -2,7 +2,7 @@
 
 The clinical-calculator backlog, grouped strictly by completion status. Calculator categorisation by specialty / setting / status now lives in [tags](../docs/calculators.md#filtering-by-tag) on each calculator - this file is purely a list of what is done, what is being built, and what is queued.
 
-Engineering and infrastructure work that is not a new calculator lives in its own section at the end.
+**Engineering, infrastructure, GUI, distribution, and any other non-calculator work lives in the top-level [`ROADMAP.md`](../ROADMAP.md), not this file.** Keeping the two split means a clinician scanning the calculator backlog is not buried in build-tooling items, and an engineer scanning the build-tooling roadmap is not buried in clinical scores.
 
 ## Status legend
 
@@ -125,47 +125,3 @@ Calculators worth shipping, under consideration. Largely surfaced from sibling o
 - [ ] **SCORAD** - Atopic dermatitis severity
 - [ ] **SCORE2 / SCORE2-OP** - ESC 2021 CV risk (verify licensing)
 - [ ] **StatinMD** (Oxford STRATIFY) - personalised 1/5/10-year risk of serious statin-induced muscle disorders; natural pairing with QRISK3 (benefit vs harm). Academic licence via Oxford University Innovation (Cai et al, *Lancet Digital Health* 2026; [licence page](https://process.innovation.ox.ac.uk/software/p/25396/stratify---stainmd-risk-calculator---academic-use/1))
-
----
-
-## Engineering & infrastructure
-
-Roadmap items that are not a new calculator but cover other aspects of the design and build.
-
-### Completed
-
-- [x] **calc-core / calc-cli workspace** with one shared registry driving every surface (`calc_core::all()`).
-- [x] **`Calculator` trait** with mandatory `license()`, registry-tested.
-- [x] **Schema-driven input templates** (no per-calculator clap struct); registry round-trips for all 52 calculators.
-- [x] **Proprietary "unavailable" stub treatment** - 10 named-not-hidden entries with open alternatives.
-- [x] **Input-definition system** for clinician-asserted predicates (`spec/calculator-input-definitions.md`).
-- [x] **Zensical docs site** deployed to GitHub Pages.
-- [x] **AGENTS.md** + canonical `s/` script directory (`s/docs`, `s/install`).
-- [x] **Tag taxonomy** in `calc-core/src/tags.rs` + `calc list --tag` CLI filter.
-- [x] **SIGPIPE-clean stdout** so `calc list | head` is well-behaved.
-- [x] **House-style alignment** - SPDX headers on every Rust source, AGPL-3.0-or-later, SHA-pinned GitHub Actions.
-
-### In-progress
-
-_None active right now._
-
-### Planned
-
-- [ ] **`cargo-dist` release pipeline** - prebuilt binaries for macOS / Linux / Windows, then publish `calc-cli` to crates.io so `cargo install calc-cli` works without `--git`.
-- [ ] **`pacharanero/homebrew-tap` formula** - matches sibling repos (sct, dsc, gitehr).
-- [ ] **Tauri desktop GUI** - standalone app whose headline is prominent copy-paste ("soft interoperability"). Cross-compiles to iOS / Android because `calc-core` is pure Rust.
-- [ ] **Retire `.claude/skills/build-calculator/`** in favour of `spec/` + `examples/` + `AGENTS.md` as the authoring entry point.
-- [ ] **Rewrite the build-calculator workflow** so it depends only on this repo's docs - no Claude-specific path.
-
-### Future
-
-- [ ] **Multilingual support** - implement `Locale` enum + `LocalizedString` per the design in [`spec/multilingual.md`](multilingual.md); validate with one calculator (FeverPAIN) and a native speaker before opening the catalogue for batched translation.
-- [ ] **Translation reciprocity with MedikQuantis** - their Catalan and Spanish strings for the 14 calculators we both ship are exactly what we need; agree a shared tag taxonomy and a citation-shape so either project can ingest the other's metadata.
-- [ ] **Reference MCP server** in this repo (today, embedding hosts roll their own from `calc_core::all()`).
-- [ ] **`calc-web`** (single-file HTML calculators) returning, ideally with `calc-core` compiled to WebAssembly so the browser surface shares the engine. Currently deprioritised.
-- [ ] **FHIR Observation export** for standardised exchange of results.
-- [ ] **Unit conversion** (metric ↔ imperial) at the input boundary; today `--input` is units-explicit.
-- [ ] **Printable / clipboard-friendly result formatting** beyond the existing text block (PDF? RTF? rich Markdown with citation links?).
-- [ ] **User-defined / third-party calculators via a plugin system** - load extra calculators at runtime from a directory or URL.
-- [ ] **Guideline-update registry** - a mechanism for re-verifying each calculator's licence and reference URL on a schedule.
-- [ ] **High-risk-score alerts** when embedded in a recording host (e.g. NEWS2 ≥ 7 fires an event the host can subscribe to).

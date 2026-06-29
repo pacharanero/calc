@@ -6,9 +6,11 @@ This file (with the matching `CLAUDE.md`, which points here) is the entry point 
 
 ## Read first
 
+- [`ROADMAP.md`](ROADMAP.md) - **all non-calculator work** (distribution & release, GUI, authoring workflow, engine direction). Engineering items live here, not in spec.
 - `spec/calculators.md` - the architecture (one core, many surfaces).
-- `spec/calculator-roadmap.md` - the tool list, build priority, and post-Tier-5 candidates (MedikQuantis-derived).
+- `spec/calculator-roadmap.md` - the **calculator** backlog (Completed / Future); calculator categorisation lives in tags, not tiers.
 - `spec/calculator-input-definitions.md` - the governed input-definition system for clinician-asserted predicates.
+- `spec/gui.md` - desktop GUI design and build priority.
 - `spec/multilingual.md` - design for future multilingual support (English-only today; locale shape agreed).
 - `calc-core/src/tags.rs` - the central tag taxonomy used by `calc list --tag` and the docs catalogue. Add new entries here, not per-calculator.
 - `docs/how-it-works.md` - the architecture phrased for users.

@@ -200,9 +200,7 @@ fn print_list(format: OutputFormat, required_tags: &[String]) -> Result<()> {
             return true;
         }
         let tags = c.tags();
-        required_tags
-            .iter()
-            .all(|t| tags.contains(&t.as_str()))
+        required_tags.iter().all(|t| tags.contains(&t.as_str()))
     };
 
     match format {

@@ -19,7 +19,11 @@ name = "calc_cli"
 path = "src/lib.rs"
 
 [dependencies]
-calc-core = { path = "../calc-core" }
+# Dual path+version dep: cargo uses the path locally so a clone builds the
+# whole workspace from source, but the version field is what gets recorded
+# when calc-cli is packaged for crates.io. Bump in lockstep with calc-core
+# (workspace version), release-plz handles this automatically.
+calc-core = { path = "../calc-core", version = "0.1.0" }
 anyhow.workspace = true
 clap.workspace = true
 serde_json.workspace = true
